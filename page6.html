@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Celestial Map of Desires</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="map.css">
+</head>
+<body class="map-body">
+    <canvas id="star-canvas"></canvas> <div class="map-header">
+        <h1 class="gold-glow">The Royal Date Night</h1>
+        <p class="subtitle-text">My Queen Amrita, the stars have aligned to tell the story of us. <br> 
+        Click each constellation to relive our golden moments.</p>
+    </div>
+
+    <div class="constellation-container">
+        <div class="star-point" id="point1" onclick="openDate(1)" style="top: 20%; left: 30%;">
+            <div class="star-glow"></div>
+            <div class="invitation-popup">An Invitation to the Secret Garden</div>
+        </div>
+
+        <div class="star-point" id="point2" onclick="openDate(2)" style="top: 50%; left: 70%;">
+            <div class="star-glow"></div>
+            <div class="invitation-popup">An Invitation to the Moonlit Balcony</div>
+        </div>
+
+        <div class="star-point" id="point3" onclick="openDate(3)" style="top: 75%; left: 40%;">
+            <div class="star-glow"></div>
+            <div class="invitation-popup">An Invitation to the Grand Banquet</div>
+        </div>
+
+        <div class="star-point" id="point4" onclick="openDate(4)" style="top: 30%; left: 60%;">
+            <div class="star-glow"></div>
+            <div class="invitation-popup">An Invitation to the Royal Sanctuary</div>
+        </div>
+    </div>
+
+    <div id="date-overlay" class="overlay-hidden">
+        <div class="note-box">
+            <span class="close-btn" onclick="closeDate()">&times;</span>
+            <h2 id="location-title" class="gold-glow"></h2>
+            <p id="love-note-text"></p>
+            <a href="page7.html" class="royal-btn">Save Our Memory, Queen</a>
+        </div>
+    </div>
+    
+    <div class="bottom-nav">
+        <a href="page7.html" class="royal-btn">Proceed to The Royal Dinner</a>
+    </div>
+
+    <audio id="bg-music" src="https://res.cloudinary.com/dsitvhpg2/video/upload/v1767218168/main_map_theme_xe7qty.mp3" loop></audio>
+    <script src="map.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Royal Explorer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="map_explorer.css">
+</head>
+<body class="explorer-body">
+    <div class="header-overlay">
+        <h1 class="royal-heading">THE ROYAL ATLAS OF OUR FUTURE</h1>
+        <p class="royal-subtext">My Queen Ammu, the world is but a canvas to our love. Choose our next realm. <br> Click on each Pins to reveal locations.</p>
+    </div>
+
+    <div class="map-wrapper" id="map-area">
+        <svg id="flight-paths"></svg>
+        
+        <div class="pin diamond" id="pin-lux" style="top: 30%; left: 48%;" onclick="showTicket(0, event)"></div>
+        <div class="pin diamond" id="pin-mal" style="top: 70%; left: 75%;" onclick="showTicket(1, event)"></div>
+        <div class="pin diamond" id="pin-ny" style="top: 38%; left: 25%;" onclick="showTicket(2, event)"></div>
+        <div class="pin diamond" id="pin-par" style="top: 35%; left: 46%;" onclick="showTicket(3, event)"></div>
+        <div class="pin diamond" id="pin-mos" style="top: 25%; left: 55%;" onclick="showTicket(4, event)"></div>
+    </div>
+
+    <div id="ticket-overlay" class="hidden-ticket" onclick="closeTicket()">
+        <div class="boarding-pass" id="boarding-pass-card" onclick="event.stopPropagation()">
+          <span class="close-pass" onclick="closeTicket()">&times;</span>
+            <div class="pass-header">Royal Airways</div>
+            <div class="pass-body">
+                <p class="passenger">VVIP Boarded: <span>King Jigyasu & Queen Amrita</span></p>
+                <h2 id="destination-name"></h2>
+                <p id="destination-reason" class="reason-text"></p>
+                <div class="barcode">|||| || | ||| || ||| | ||</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="page9.html" class="royal-btn">Proceed to Royal Cinema</a>
+    </div>
+
+    <audio id="explorer-music" loop src="https://res.cloudinary.com/dsitvhpg2/video/upload/v1767220611/explorer_theme_tvsikw.mp3"></audio>
+    <script src="explorer.js"></script>
+</body>
+</html>

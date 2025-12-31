@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Royal Cake Cutting Ceremony</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========== RESET & BASE STYLES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            font-family: 'Cormorant Garamond', 'Garamond', serif;
+            color: #fff;
+            position: relative;
+        }
+
+        body {
+            background: url('https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217900/background_hall_zangc9.png') center center / cover fixed;
+            position: relative;
+        }
+
+        /* Dark overlay for readability */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(25, 0, 51, 0.8), rgba(51, 0, 25, 0.7));
+            z-index: 0;
+        }
+
+        /* ========== ORNATE GOLDEN BORDER ========== */
+        .ornate-border {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .ornate-border::before,
+        .ornate-border::after {
+            content: '';
+            position: absolute;
+            background: linear-gradient(135deg, #D4AF37, #FFD700, #D4AF37);
+        }
+
+        /* Top and bottom borders */
+        .ornate-border::before {
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.6),
+                        inset 0 2px 4px rgba(255, 215, 0, 0.8);
+        }
+
+        .ornate-border::after {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            box-shadow: 0 -4px 20px rgba(212, 175, 55, 0.6),
+                        inset 0 -2px 4px rgba(255, 215, 0, 0.8);
+        }
+
+        /* Side borders */
+        .ornate-border-side {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 20px;
+            background: linear-gradient(180deg, #D4AF37, #FFD700, #D4AF37);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6),
+                        inset 2px 0 4px rgba(255, 215, 0, 0.8);
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .ornate-border-side.left {
+            left: 0;
+        }
+
+        .ornate-border-side.right {
+            right: 0;
+        }
+
+        /* Corner decorations */
+        .corner-decoration {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #FFD700, #D4AF37);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.9),
+                        inset 0 0 15px rgba(255, 215, 0, 0.6);
+            z-index: 10000;
+            pointer-events: none;
+        }
+
+        .corner-decoration.top-left { top: 0; left: 0; }
+        .corner-decoration.top-right { top: 0; right: 0; }
+        .corner-decoration.bottom-left { bottom: 0; left: 0; }
+        .corner-decoration.bottom-right { bottom: 0; right: 0; }
+
+        /* ========== MAIN CONTENT WRAPPER ========== */
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding: 40px 40px 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ========== ROYAL HEADING ========== */
+        .royal-heading {
+            text-align: center;
+            margin-bottom: 100px;
+            animation: fadeInDown 1.5s ease-out;
+        }
+
+        .royal-heading h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 500;
+            background: linear-gradient(135deg, #FFD700, #D4AF37, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.8),
+                         0 0 20px rgba(255, 215, 0, 0.6);
+            letter-spacing: 3px;
+            filter: drop-shadow(0 4px 10px rgba(212, 175, 55, 0.5));
+        }
+
+        /* ========== CEREMONY STAGE ========== */
+        .ceremony-stage {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        .table-container {
+            position: relative;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .table-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.7));
+        }
+
+        .cake-container {
+            position: absolute;
+            top: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            max-width: 300px;
+            animation: floatCake 3s ease-in-out infinite;
+        }
+
+        .cake-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 15px 40px rgba(212, 175, 55, 0.4));
+            transition: transform 0.6s ease, opacity 0.6s ease;
+        }
+
+        .cake-img.cutting {
+            animation: cakeCutEffect 0.8s ease-out;
+        }
+
+        @keyframes floatCake {
+            0%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+        }
+
+        @keyframes cakeCutEffect {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* ========== KNIFE ========== */
+        .knife {
+            position: fixed;
+            width: 120px;
+            height: auto;
+            cursor: grab;
+            z-index: 100;
+            pointer-events: auto;
+            filter: drop-shadow(0 5px 15px rgba(212, 175, 55, 0.5));
+            transition: transform 0.05s ease-out;
+        }
+
+        .knife:active {
+            cursor: grabbing;
+        }
+
+        .knife img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ========== ROYAL PERMISSION MODAL (GOLDEN MIRROR) ========== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.9);
+        }
+
+        .golden-mirror {
+            position: relative;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(255, 215, 0, 0.2));
+            backdrop-filter: blur(20px);
+            border: 4px solid #D4AF37;
+            border-radius: 20px;
+            padding: 60px 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 60px rgba(212, 175, 55, 0.6),
+                        inset 0 0 40px rgba(255, 215, 0, 0.1);
+            text-align: center;
+            animation: mirrorEntrance 1s ease-out;
+        }
+
+        @keyframes mirrorEntrance {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) rotateY(90deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateY(0deg);
+            }
+        }
+
+        .golden-mirror h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: #FFD700;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+        }
+
+        .golden-mirror p {
+            font-size: 1.3rem;
+            color: #FFF;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .proceed-btn {
+            padding: 15px 50px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1a0033;
+            background: linear-gradient(135deg, #f4e175, #ae8705);
+            border: 2px solid #361b49;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5),
+                        inset 0 2px 5px rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .proceed-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(212, 175, 55, 0.7),
+                        inset 0 2px 5px rgba(255, 255, 255, 0.5);
+        }
+
+        /* ========== HEART-SHAPED POPUP ========== */
+        .heart-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .heart-popup-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Remove the old .heart-popup and .heart-popup.show styles and replace with these */
+.heart-mirror-container {
+    position: relative;
+    width: 800px; /* Adjust based on your image size */
+    max-width: 95vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: heartBeat 1.5s ease-out infinite;
+}
+
+.mirror-frame-img {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.8));
+}
+
+.heart-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%; /* Keeps text inside the heart hole of the mirror */
+    text-align: center;
+    z-index: 2;
+}
+
+.heart-content h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.8rem;
+    color: #FFD700;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px rgba(0,0,0,0.8);
+}
+
+.heart-content p {
+    font-size: 1.1rem;
+    color: #FFF;
+    text-shadow: 0 0 8px rgba(0,0,0,0.9);
+    margin-bottom: 20px;
+}
+        @keyframes heartBeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            25% {
+                transform: scale(1.1);
+            }
+            50% {
+                transform: scale(0.95);
+            }
+            75% {
+                transform: scale(1.05);
+            }
+        }
+
+        .close-btn {
+            padding: 12px 35px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1a0033;
+            background: linear-gradient(135deg, #FFD700, #D4AF37);
+            border: 2px solid #FFD700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .close-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.7);
+        }
+
+        /* ========== CONFETTI ========== */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            z-index: 9999;
+            pointer-events: none;
+            animation: confettiFall 3s linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ========== FOOTER NAVIGATION ========== */
+        .royal-footer {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        .royal-nav-btn {
+    padding: 18px 45px;
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1a0033;
+    background: linear-gradient(135deg, #FFD700, #D4AF37, #FFD700);
+    border: 3px solid #FFD700;
+    border-radius: 50px;
+    cursor: pointer;
+    text-decoration: none;
+
+    /* CHANGE THESE LINES */
+    display: inline-block; 
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease, visibility 1s ease;
+    
+    box-shadow: 0 10px 35px rgba(212, 175, 55, 0.6);
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* ADD THIS CLASS */
+.royal-nav-btn.reveal-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+        .royal-nav-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 15px 45px rgba(212, 175, 55, 0.8),
+                        inset 0 2px 8px rgba(255, 255, 255, 0.6);
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 10px 35px rgba(212, 175, 55, 0.6),
+                            inset 0 2px 8px rgba(255, 255, 255, 0.4);
+            }
+            50% {
+                box-shadow: 0 15px 50px rgba(212, 175, 55, 0.9),
+                            inset 0 2px 8px rgba(255, 255, 255, 0.6);
+            }
+        }
+
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== HIDDEN STATE ========== */
+        .hidden {
+            display: none !important;
+        }
+
+        /* ========== MUSIC HINT ========== */
+        .music-hint {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(212, 175, 55, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid #D4AF37;
+            padding: 10px 25px;
+            border-radius: 50px;
+            color: #FFD700;
+            font-size: 1rem;
+            z-index: 9998;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .music-hint.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (max-width: 768px) {
+            .royal-heading h1 {
+                font-size: 2rem;
+                letter-spacing: 2px;
+            }
+
+            .golden-mirror {
+                padding: 40px 25px;
+            }
+
+            .golden-mirror h2 {
+                font-size: 1.5rem;
+            }
+
+            .golden-mirror p {
+                font-size: 1.1rem;
+            }
+
+            .knife {
+                width: 80px;
+            }
+
+            .cake-container {
+                width: 60%;
+            }
+
+            .heart-popup {
+                width: 300px;
+                height: 300px;
+                padding: 40px 25px;
+            }
+
+            .heart-popup h3 {
+                font-size: 1.4rem;
+            }
+
+            .heart-popup p {
+                font-size: 1rem;
+            }
+
+            .corner-decoration {
+                width: 40px;
+                height: 40px;
+            }
+
+            .ornate-border::before,
+            .ornate-border::after {
+                height: 15px;
+            }
+
+            .ornate-border-side {
+                width: 15px;
+            }
+
+            .royal-nav-btn {
+                padding: 15px 35px;
+                font-size: 1.1rem;
+            }
+
+            .content-wrapper {
+                padding: 30px 20px 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .royal-heading h1 {
+                font-size: 1.5rem;
+            }
+
+            .royal-nav-btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+
+            .cake-container {
+                width: 70%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Ornate Golden Border -->
+    <div class="ornate-border"></div>
+    <div class="ornate-border-side left"></div>
+    <div class="ornate-border-side right"></div>
+    <div class="corner-decoration top-left"></div>
+    <div class="corner-decoration top-right"></div>
+    <div class="corner-decoration bottom-left"></div>
+    <div class="corner-decoration bottom-right"></div>
+
+    <!-- Royal Permission Modal (Golden Mirror) -->
+    <div class="modal-overlay" id="permissionModal">
+        <div class="golden-mirror">
+            <h2>Her Majesty's Permission</h2>
+            <p>Request for the Queen Amrita gracious permission to commence the Royal Cake Cutting Ceremony. <br> 
+             Grab the knife and honour My Queen.</p>
+            <button class="proceed-btn" id="proceedBtn">Proceed</button>
+        </div>
+    </div>
+
+    <!-- Music Hint (if autoplay blocked) -->
+    <div class="music-hint hidden" id="musicHint">Tap to enable royal music</div>
+
+    <!-- Main Content -->
+    <div class="content-wrapper" id="mainContent" style="opacity: 0; pointer-events: none;">
+        <!-- Royal Heading -->
+        <div class="royal-heading">
+            <h1>The Royal Cake Cutting Ceremony</h1>
+        </div>
+
+        <!-- Ceremony Stage -->
+        <div class="ceremony-stage">
+            <div class="table-container">
+                <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217939/table_hymqyy.png" alt="Royal Table" class="table-img">
+                <div class="cake-container" id="cakeContainer">
+                    <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217913/cake_ug4ham.png" alt="Royal Cake" class="cake-img" id="cakeImg">
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Navigation -->
+        <div class="royal-footer">
+            <a href="page5.html" class="royal-nav-btn">Proceed to The Royal Gallery</a>
+        </div>
+    </div>
+
+    <!-- Draggable Knife -->
+    <div class="knife hidden" id="knife">
+        <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217913/knife_taykmc.png" alt="Royal Knife">
+    </div>
+
+    <!-- Heart-Shaped Popup -->
+    <div class="heart-popup-overlay" id="heartPopup">
+        <div class="heart-mirror-container">
+          <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217916/mirror_frame_xnunhv.png" alt="Royal Mirror" class="mirror-frame-img">
+          <div class="heart-content">
+            <h3>Congratulations!</h3>
+            <p>Long live the Kingdom! <br> 💜King Jigyasu & Queen Amrita🖤 <br> The Royal Cake has been <br> shared with grace <br> and elegance.</p>
+            <button class="close-btn" id="closeHeartBtn">Thank you, Your Majesty</button>
+        </div>
+        </div>
+    </div>
+
+    <!-- Audio Element -->
+    <audio id="royalMusic" loop>
+        <source src="https://res.cloudinary.com/dsitvhpg2/video/upload/v1767218158/royal_music_bt6wwh.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // ========== GLOBAL VARIABLES ==========
+        const permissionModal = document.getElementById('permissionModal');
+        const proceedBtn = document.getElementById('proceedBtn');
+        const mainContent = document.getElementById('mainContent');
+        const knife = document.getElementById('knife');
+        const cakeImg = document.getElementById('cakeImg');
+        const cakeContainer = document.getElementById('cakeContainer');
+        const heartPopup = document.getElementById('heartPopup');
+        const closeHeartBtn = document.getElementById('closeHeartBtn');
+        const royalMusic = document.getElementById('royalMusic');
+        const musicHint = document.getElementById('musicHint');
+
+        let isDragging = false;
+        let knifeX = 0;
+        let knifeY = 0;
+        let hasCut = false;
+        let cutPath = [];
+
+        // ========== PERMISSION MODAL & MUSIC ==========
+        proceedBtn.addEventListener('click', () => {
+            // Hide modal with animation
+            permissionModal.classList.add('hidden');
+            
+            // Show main content with fade-in
+            setTimeout(() => {
+                mainContent.style.opacity = '1';
+                mainContent.style.pointerEvents = 'auto';
+                mainContent.style.transition = 'opacity 1s ease';
+            }, 300);
+
+            // Show knife after content appears
+            setTimeout(() => {
+                knife.classList.remove('hidden');
+                initializeKnife();
+            }, 1000);
+
+            // Start music
+            playRoyalMusic();
+        });
+
+        function playRoyalMusic() {
+            royalMusic.play().catch(err => {
+                console.log('Autoplay blocked, showing hint');
+                musicHint.classList.remove('hidden');
+            });
+        }
+
+        // Music hint click handler
+        musicHint.addEventListener('click', () => {
+            royalMusic.play().then(() => {
+                musicHint.classList.add('hidden');
+            });
+        });
+
+        // ========== KNIFE INITIALIZATION ==========
+        function initializeKnife() {
+            const cakeRect = cakeContainer.getBoundingClientRect();
+            knifeX = cakeRect.right + 50;
+            knifeY = cakeRect.top + cakeRect.height / 2;
+            updateKnifePosition();
+        }
+
+        function updateKnifePosition() {
+            knife.style.left = knifeX + 'px';
+            knife.style.top = knifeY + 'px';
+        }
+
+        // ========== KNIFE DRAG MECHANICS ==========
+        // Mouse events
+        knife.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDrag);
+
+        // Touch events
+        knife.addEventListener('touchstart', startDragTouch, { passive: false });
+        document.addEventListener('touchmove', dragTouch, { passive: false });
+        document.addEventListener('touchend', stopDrag);
+
+        function startDrag(e) {
+            isDragging = true;
+            cutPath = [];
+        }
+
+        function startDragTouch(e) {
+            e.preventDefault();
+            isDragging = true;
+            cutPath = [];
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            
+            knifeX = e.clientX - knife.offsetWidth / 2;
+            knifeY = e.clientY - knife.offsetHeight / 2;
+            updateKnifePosition();
+            
+            // Track path for cut detection
+            cutPath.push({ x: e.clientX, y: e.clientY });
+            detectCut();
+        }
+
+        function dragTouch(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            
+            const touch = e.touches[0];
+            knifeX = touch.clientX - knife.offsetWidth / 2;
+            knifeY = touch.clientY - knife.offsetHeight / 2;
+            updateKnifePosition();
+            
+            // Track path for cut detection
+            cutPath.push({ x: touch.clientX, y: touch.clientY });
+            detectCut();
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            cutPath = [];
+        }
+
+        // ========== CUT DETECTION ==========
+        function detectCut() {
+            if (hasCut || cutPath.length < 10) return;
+
+            const cakeRect = cakeImg.getBoundingClientRect();
+            
+            // Check if knife path crosses the cake horizontally
+            let leftCrossed = false;
+            let rightCrossed = false;
+
+            cutPath.forEach(point => {
+                // Check if point is within cake vertical bounds
+                if (point.y >= cakeRect.top && point.y <= cakeRect.bottom) {
+                    // Check horizontal position
+                    if (point.x >= cakeRect.left && point.x <= cakeRect.left + cakeRect.width * 0.3) {
+                        leftCrossed = true;
+                    }
+                    if (point.x >= cakeRect.right - cakeRect.width * 0.3 && point.x <= cakeRect.right) {
+                        rightCrossed = true;
+                    }
+                }
+            });
+
+            // If knife crossed from left to right (or vice versa)
+            if (leftCrossed && rightCrossed) {
+                performCut();
+            }
+        }
+
+        // ========== CAKE CUTTING ANIMATION ==========
+        function performCut() {
+            hasCut = true;
+            
+            // Add cutting animation class
+            cakeImg.classList.add('cutting');
+            
+            // Change to cut cake image
+            setTimeout(() => {
+                cakeImg.src = 'https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217906/cake_cut_ureh6l.png';
+                cakeImg.classList.remove('cutting');
+            }, 400);
+
+            // Trigger celebration
+            setTimeout(() => {
+                triggerCelebration();
+            }, 800);
+        }
+
+        // ========== CELEBRATION: CONFETTI + HEART POPUP ==========
+        function triggerCelebration() {
+            // Create confetti
+            createConfetti();
+            
+            // Show heart popup after short delay
+            setTimeout(() => {
+                heartPopup.classList.add('show');
+            }, 1500);
+        }
+
+        function createConfetti() {
+            const colors = ['#D4AF37', '#FFD700', '#C0C0C0', '#E8E8E8'];
+            const confettiCount = 150;
+            const cakeRect = cakeImg.getBoundingClientRect();
+            const originX = cakeRect.left + cakeRect.width / 2;
+            const originY = cakeRect.top + cakeRect.height / 2;
+
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = originX + 'px';
+                confetti.style.top = originY + 'px';
+                confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                confetti.style.height = (Math.random() * 10 + 5) + 'px';
+                
+                // Random horizontal spread
+                const spreadX = (Math.random() - 0.5) * 600;
+                confetti.style.setProperty('--spread-x', spreadX + 'px');
+                
+                // Randomize animation duration
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                confetti.style.animationDelay = (Math.random() * 0.5) + 's';
+                
+                document.body.appendChild(confetti);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 4000);
+            }
+
+            // Update confetti animation to include spread
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes confettiFall {
+                    0% {
+                        transform: translate(0, 0) rotate(0deg);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translate(var(--spread-x, 0), 100vh) rotate(720deg);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // This tells the "Thank You" button what to do
+closeHeartBtn.addEventListener('click', () => {
+    // 1. Hide the heart mirror
+    heartPopup.classList.remove('show');
+
+    // 2. Find the navigation button specifically
+    const nextBtn = document.querySelector('.royal-nav-btn');
+    
+    // 3. Apply the class to make it visible
+    if (nextBtn) {
+        nextBtn.classList.add('reveal-active');
+        
+        // 4. Smooth scroll so the Queen sees the button appear
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+});
+        // ========== WINDOW RESIZE HANDLER ==========
+        window.addEventListener('resize', () => {
+            if (!knife.classList.contains('hidden') && !isDragging) {
+                initializeKnife();
+            }
+        });
+    </script>
+</body>
+</html>

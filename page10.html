@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Royal Letter - Kingdom of Amrita & Jigyasu</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=EB+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --emerald: #046307;
+            --purple: #4B0082;
+            --gold: #D4AF37;
+            --silver: #C0C0C0;
+            --black: #010101;
+            --font-royal: 'Playfair Display', serif;
+            --font-serif: 'EB Garamond', serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Prevent webpage scroll */
+            font-family: var(--font-serif);
+            background: url('https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217934/queen_court_gdtal0.png') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        /* ══════════════════════════════════
+           ROYAL DECORATIVE BORDER
+           ══════════════════════════════════ */
+        .viewport-frame {
+            position: fixed;
+            inset: 0;
+            border: 12px solid var(--gold);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .viewport-frame::before {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border: 2px solid var(--silver);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        /* ══════════════════════════════════
+           INITIAL SCENE
+           ══════════════════════════════════ */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 40px;
+            text-align: center;
+            background: rgba(1, 1, 1, 0.4); /* Subtle darkening for readability */
+        }
+
+        .header-section h1 {
+            font-family: var(--font-royal);
+            color: var(--silver);
+            font-size: 4rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+        }
+
+        .silver-underline {
+            width: 300px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--silver), transparent);
+            margin: 0 auto 20px;
+        }
+
+        .description {
+            color: #fff;
+            max-width: 650px;
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        /* Letter & Seal Positioning */
+        .letter-box {
+            position: relative;
+            width: 320px;
+            margin-bottom: 40px;
+            transition: transform 0.5s ease;
+        }
+
+        .rolled-letter-img {
+            width: 100%;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
+        }
+
+        .seal-img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 110px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .seal-img:hover { transform: translate(-50%, -50%) scale(1.1); }
+
+        /* ══════════════════════════════════
+           ROYAL BUTTONS
+           ══════════════════════════════════ */
+        .royal-btn {
+            background: linear-gradient(135deg, #e0e0e0 0%, #C0C0C0 50%, #8e8e8e 100%);
+            color: var(--black);
+            font-family: var(--font-royal);
+            font-weight: bold;
+            padding: 18px 45px;
+            border: 2px solid var(--silver);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+        }
+
+        .royal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(192, 192, 192, 0.6);
+            background: linear-gradient(135deg, #fff, var(--silver));
+        }
+
+        /* ══════════════════════════════════
+           OPENED LETTER OVERLAY
+           ══════════════════════════════════ */
+        .letter-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            max-width: 800px;
+            height: 85vh;
+            background: url('https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217896/atlas_texture_kargjk.jpg');
+            background-size: cover;
+            border: 10px solid var(--gold);
+            z-index: 2000;
+            padding: 60px;
+            box-shadow: 0 0 100px rgba(0,0,0,0.9);
+        }
+
+        .scrollable-content {
+            height: 100%;
+            overflow-y: auto;
+            padding-right: 20px;
+            text-align: left;
+        }
+
+        /* Custom Scrollbar */
+        .scrollable-content::-webkit-scrollbar { width: 8px; }
+        .scrollable-content::-webkit-scrollbar-thumb { background: var(--gold); }
+
+        .letter-header-seal {
+            width: 150px;
+            display: block;
+            margin: 0 auto 20px;
+        }
+
+        .typewriter-container {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            color: #2c1e11;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        /* Ensure the button is hidden and centered */
+        #nextPageBtn {
+        display: none; /* Crucial: Hidden by default */
+        margin-top: 50px;
+        margin-bottom: 30px;
+        text-decoration: none;
+         text-align: center;
+         opacity: 0;
+        transition: opacity 1s ease-in; /* Smooth fade-in effect */
+        }
+    </style>
+</head>
+<body>
+
+<div class="viewport-frame"></div>
+
+<div class="main-container" id="initialView">
+    <div class="header-section">
+        <h1>The Royal Letter</h1>
+        <div class="silver-underline"></div>
+        <p class="description">
+            To the honored recipient: A Royal letter from the Sovereign of the Kingdom of Amrita & Jigyasu. 
+            The contents herein are of the utmost confidentiality.
+        </p>
+    </div>
+
+    <div class="letter-box">
+        <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217932/rolled_letter_rzwizk.png" alt="Rolled Letter" class="rolled-letter-img">
+        <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217939/royal_seal_pnp121.png" alt="Royal Seal" class="seal-img">
+    </div>
+
+    <button class="royal-btn" onclick="openRoyalLetter()">Permission to Open Letter, Your Majesty</button>
+</div>
+
+<div class="letter-overlay" id="letterOverlay">
+    <div class="scrollable-content">
+        <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217939/royal_seal_pnp121.png" alt="Royal Seal" class="letter-header-seal">
+        <div class="silver-underline" style="width: 100%; opacity: 0.5;"></div>
+        
+        <div id="typewriter" class="typewriter-container"></div>
+
+        <a href="page11.html" id="nextPageBtn" class="royal-btn">Enter The Game Zone: Flip Card</a>
+    </div>
+</div>
+<audio id="memory-audio" loop>
+            <source src="https://res.cloudinary.com/dsitvhpg2/video/upload/v1767218135/balcony_theme_njqzza.mp3" type="audio/mpeg">
+       </audio>
+
+<script>
+    const message = `To, 
+    The Queen of Heart, 
+    My Dear Amrita(Ammu),
+    Greetings,
+    
+    In your honour, The Royal Kingdom of Jigyasu & Amrita prospers to every cell of presence. Every veins and blood system carry your warmth to keep the land of organs fertile. My heart pumps with the strength of yours to deliver to every reign of soul.
+    
+    To My Eternal Sovereign, Mrs. Maurya🖤💜,
+
+Amrita🖤, my love, as I sit within these silent walls of our court, the weight of the crown feels light only because I know you walk beside me. You are not merely the Queen of this realm; you are the architect of my peace and the very soul of my existence.
+
+My dearest Ammu🫂😘, I remember the first time I looked into your eyes and realized that my search for a 'Humsafar'💏 had ended before it truly began. In you, I found a partner who transcends the titles we bear. To the world, you are the dignified Queen Amrita, but to me, you are my 'Softy'—the only person who knows the heart that beats beneath this royal armor. You are the gentle whisper in the midst of a political storm and the calm that settles my restless mind.
+
+Zindagi🧬, I call you my life because, without your presence, these halls would be nothing but cold stone and echoing silence. You have turned a kingdom into a home. Every decree I sign and every land I protect is for the future we are building together. You are my ‘Zindagi’ in the truest sense; every breath I take is infused with the gratitude of having you as my wife🖤💜🫂.
+
+My Soulmate❣️, they say that kings are often lonely, but I have never known loneliness since the day our paths converged. You understand the thoughts I haven't yet spoken and the fears I hide from the rest of the world. You are my 'Soulmate' not because we are perfect, but because we are perfectly aligned. Our spirits are woven together like the gold and silver threads of our royal banner—distinct, yet inseparable.
+
+You are my world🌏. When I look out from the balcony of our chamber at the vast lands of the Maurya legacy, I realize that none of it compares to the universe I find in your smile. The stars themselves seem to dim when you enter the room. You are the light that guides my path when the nights are dark and the decisions are heavy.
+
+To my 'Mrs. Maurya🫂,' the woman who carries my name with such grace and strength💪🏻: Thank you. Thank you for choosing me. Thank you for being the 'Humsafar' who makes this long journey of life a beautiful adventure. I promise to protect you, to honor you, and to love you with a ferocity that time cannot wither.
+
+The letter you hold now is but a fraction of the devotion I feel. My love for you is as ancient as the mountains and as deep as the seas that border our kingdom. You are my beginning and my end.
+
+With all my heart and my entire kingdom🤴👸,
+
+Yours forever, King Jigyasu💜`;
+
+    function openRoyalLetter() {
+        // Fade out initial view
+        document.getElementById('initialView').style.transition = "opacity 0.8s";
+        document.getElementById('initialView').style.opacity = "0";
+        
+        setTimeout(() => {
+            document.getElementById('initialView').style.display = "none";
+            const overlay = document.getElementById('letterOverlay');
+            overlay.style.display = "block";
+            startTyping();
+        }, 800);
+    }
+
+    function startTyping() {
+    let i = 0;
+    const speed = 40; // Adjust for faster/slower typing
+    const container = document.getElementById("typewriter");
+    const nextBtn = document.getElementById('nextPageBtn');
+
+    function type() {
+        if (i < message.length) {
+            container.textContent += message.charAt(i);
+            i++;
+            
+            // Auto-scroll the letter content so the user sees the latest line
+            const scrollDiv = document.querySelector('.scrollable-content');
+            scrollDiv.scrollTop = scrollDiv.scrollHeight;
+            
+            setTimeout(type, speed);
+        } else {
+            // ALL TEXT IS FINISHED
+            nextBtn.style.display = 'inline-block'; // Make it part of the layout
+            // Small delay to allow the CSS transition to look smooth
+            setTimeout(() => {
+                nextBtn.style.opacity = '1';
+            }, 100);
+        }
+    }
+    type();
+}
+window.addEventListener('click', () => {
+        const audio = document.getElementById('memory-audio');
+        audio.play();
+    }, { once: true });
+</script>
+
+</body>
+</html>

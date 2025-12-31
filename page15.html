@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Royal Gallery – 50 Reasons</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lora:ital,wght@1,400;1,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --obsidian: #0A0A0A;
+      --plum: #2D004F;
+      --gold: #D4AF37;
+      --silver: #C0C0C0;
+      --emerald: #046307;
+      --frame-width: 15px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--obsidian);
+      background: radial-gradient(circle at center, var(--plum) 0%, var(--obsidian) 100%);
+      color: var(--silver);
+      font-family: 'Lora', serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Imperial Frame */
+    .imperial-frame {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border: var(--frame-width) solid var(--gold);
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 0 30px rgba(212, 175, 55, 0.3);
+    }
+
+    .filigree {
+      position: absolute;
+      width: 80px; height: 80px;
+      fill: var(--emerald);
+      filter: drop-shadow(0 0 5px var(--gold));
+    }
+    .tl { top: -5px; left: -5px; }
+    .tr { top: -5px; right: -5px; transform: rotate(90deg); }
+    .bl { bottom: -5px; left: -5px; transform: rotate(-90deg); }
+    .br { bottom: -5px; right: -5px; transform: rotate(180deg); }
+
+    /* Layout Layers */
+    #dustCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .gallery-container {
+      position: relative;
+      z-index: 3;
+      padding: 60px 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 80px;
+      z-index: 10;
+    }
+
+    .hero h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 8px;
+      text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      color: var(--silver);
+      letter-spacing: 4px;
+    }
+
+    /* Heart Grid */
+    .hearts-grid {
+      display: grid;
+      gap: 30px;
+      width: 100%;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      perspective: 1000px;
+    }
+
+    /* Heart Component */
+    .heart-wrapper {
+      position: relative;
+      height: 250px;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .heart-wrapper.reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .heart-card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .heart-wrapper:hover .heart-card {
+      transform: rotateY(180deg) scale(1.05);
+    }
+
+    .heart-face {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      /* Wider heart shape, strictly symmetrical */
+      clip-path: path('M125,70 C125,20 25,20 25,80 C25,130 125,180 125,230 C125,180 225,130 225,80 C225,20 125,20 125,70 Z');
+      display: flex;
+      flex-direction: column; /* Force column alignment */
+      align-items: center;    /* Center horizontally */
+      justify-content: center; /* Center vertically */
+      padding: 20px;
+      text-align: center;
+    }
+
+    .heart-front {
+      background: conic-gradient(from 45deg, var(--gold), #f9e297, var(--gold));
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .heart-front::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(0,0,0,0.2) 100%);
+    }
+
+    .heart-number {
+      font-family: 'Cinzel', serif;
+      font-size: 3rem;
+      color: #333;
+      font-weight: 900;
+      margin: 0; /* Remove potential offsets */
+    }
+
+    .heart-back {
+      background: var(--obsidian);
+      color: var(--silver);
+      transform: rotateY(180deg);
+      border: 2px solid var(--gold);
+      overflow: hidden;
+    }
+
+    /* "Hidden and Emerging" Text Adjustment */
+    .heart-back p {
+      font-style: italic;
+      font-size: 1.1rem;
+      line-height: 1.4;
+      max-width: 80%;
+      margin: 0; 
+      transform: translateZ(-100px) scale(0.2);
+      opacity: 0;
+      transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .heart-wrapper:hover .heart-back p {
+      transform: translateZ(0) scale(1);
+      opacity: 1;
+    }
+
+    @media (max-width: 640px) {
+      .hearts-grid { grid-template-columns: 1fr; }
+      .heart-wrapper { height: 220px; }
+      .heart-face { clip-path: path('M100,60 C100,20 20,20 20,70 C20,110 100,150 100,200 C100,150 180,110 180,70 C180,20 100,20 100,60 Z'); }
+    }
+
+    .royal-footer {
+      margin-top: 80px;
+      padding-bottom: 60px;
+      display: flex;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .btn-royal {
+      position: relative;
+      padding: 18px 45px;
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--obsidian);
+      background: linear-gradient(135deg, var(--gold) 0%, #f9e297 50%, var(--gold) 100%);
+      border: 2px solid var(--silver);
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 15px rgba(212, 175, 55, 0.3);
+      overflow: hidden;
+    }
+
+    .btn-jewel {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 5px var(--emerald);
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .jewel-left { left: 10px; }
+    .jewel-right { right: 10px; }
+  </style>
+</head>
+<body>
+
+  <div class="imperial-frame">
+    <svg class="filigree tl" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L10 10 L10 100 L0 100 Z M30 30 Q 50 10 70 30 T 90 70" /></svg>
+    <svg class="filigree tr" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L10 10 L10 100 L0 100 Z M30 30 Q 50 10 70 30 T 90 70" /></svg>
+    <svg class="filigree bl" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L10 10 L10 100 L0 100 Z M30 30 Q 50 10 70 30 T 90 70" /></svg>
+    <svg class="filigree br" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L10 10 L10 100 L0 100 Z M30 30 Q 50 10 70 30 T 90 70" /></svg>
+  </div>
+
+  <canvas id="dustCanvas"></canvas>
+
+  <div class="gallery-container">
+    <header class="hero">
+      <h1>Royal Confession</h1>
+      <p>50 Sacred Truths of My Heart</p> <br>
+      <hr style="border: 0; height: 1px; background: linear-gradient(to right, transparent, var(--silver), transparent);">
+    </header>
+
+    <div id="heartGallery" class="hearts-grid"></div>
+  </div>
+
+  <footer class="royal-footer">
+    <a href="page16.html" class="btn-royal">
+      <span class="btn-jewel jewel-left"></span>
+      Enter the Royal Music Lounge🖤💜
+      <span class="btn-jewel jewel-right"></span>
+    </a>
+  </footer>
+
+  <script>
+    const reasons = [
+      "Gntle Smile", "Name Calling", "Supporter",
+      "Sparkling Eyes", "Handle Storms", "Kindness",
+      "Warmth", "Curiosity", "I with You",
+      "Laughter", "Big Dreams", "Resilience",
+      "Making better person", "Music taste", "skin scent",
+      "late-night convo", "Hidden goofy", "Protect us",
+      "Honesty", "detailing", "passionate",
+      "Stars gaze", "Touch", "Patience",
+      "Challenger", "Coffee rituals", "Forgiveness",
+      "Vulnerability Strength", "Perspective", "Happy Dance",
+      "Loyalty", "Deep Listener", "Experimental",
+      "Voice sound", "Adventourous", "Light up room",
+      "Caring", "Hand Holder", "Nature lover",
+      "Obstacles free", "Soulmate", "Inspiration",
+      "Dedicated", "Comfy Presence", "Quirky",
+      "Celebrator", "Wise", "Way of loving",
+      "Futuristic", "Simply YOU🫂"
+    ];
+
+    const gallery = document.getElementById('heartGallery');
+    reasons.forEach((text, i) => {
+      const card = document.createElement('div');
+      card.className = 'heart-wrapper';
+      card.innerHTML = `
+        <div class="heart-card">
+          <div class="heart-face heart-front">
+            <span class="heart-number">${i + 1}</span>
+          </div>
+          <div class="heart-face heart-back">
+            <p>${text}</p>
+          </div>
+        </div>
+      `;
+      gallery.appendChild(card);
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('reveal');
+          }, i % 5 * 100); 
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.heart-wrapper').forEach(h => observer.observe(h));
+
+    const canvas = document.getElementById('dustCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let width, height;
+
+    function initCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      particles = [];
+      const count = width < 640 ? 30 : 80;
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          size: Math.random() * 2 + 1,
+          vx: Math.random() * 0.5 - 0.25,
+          vy: Math.random() * 0.5 - 0.25,
+          opacity: Math.random()
+        });
+      }
+    }
+
+    function animateDust() {
+      ctx.clearRect(0, 0, width, height);
+      const scrollY = window.scrollY * 0.2;
+      particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = width; if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height; if (p.y > height) p.y = 0;
+        const displayY = (p.y + scrollY) % height;
+        ctx.beginPath(); ctx.arc(p.x, displayY, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(212, 175, 55, ${p.opacity * 0.5})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(animateDust);
+    }
+
+    window.addEventListener('resize', initCanvas);
+    initCanvas();
+    animateDust();
+  </script>
+</body>
+</html>

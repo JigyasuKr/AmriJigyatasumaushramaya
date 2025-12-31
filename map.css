@@ -1,0 +1,131 @@
+.map-body {
+    background: #000510; /* Deep Midnight Blue */
+    background-image: url('https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217937/stars_bg_gg8hdb.png');
+    background-size: cover;
+    color: #FFD700; /* Gold */
+}
+
+.map-header {
+    text-align: center;
+    padding-top: 40px;
+    z-index: 10;
+    position: relative;
+}
+
+.subtitle-text {
+    color: #C0C0C0;
+    font-style: italic;
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 40px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+}
+
+
+.gold-glow {
+    color: #FFD700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+#star-canvas {
+    position: fixed;
+    top: 0; left: 0; z-index: 0;
+}
+
+.constellation-container {
+    position: relative;
+    width: 100vw;
+    height: 80vh;
+    z-index: 2;
+}
+
+/* The Star Points */
+.star-point {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px #fff;
+}
+
+.star-glow {
+    position: absolute;
+    top: -10px; left: -10px;
+    width: 40px; height: 40px;
+    background: rgba(255, 215, 0, 0.3);
+    border-radius: 50%;
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.5); opacity: 0.4; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+/* Hover Reveal - Royal Invitation */
+.invitation-popup {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 5, 16, 0.9);
+    border: 1px solid #FFD700;
+    padding: 10px;
+    white-space: nowrap;
+    border-radius: 5px;
+    opacity: 0;
+    transition: 0.3s;
+    pointer-events: none;
+    font-style: italic;
+}
+
+.star-point:hover .invitation-popup {
+    opacity: 1;
+    bottom: 40px;
+}
+
+/* Love Note Overlay */
+#date-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.5s;
+}
+
+.overlay-hidden { visibility: hidden; opacity: 0; }
+.overlay-visible { visibility: visible !important; opacity: 1 !important; }
+
+.note-box {
+    background: linear-gradient(135deg, #000510, #043927);
+    border: 2px solid #FFD700;
+    padding: 40px;
+    max-width: 500px;
+    text-align: center;
+    border-radius: 15px;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px; right: 20px;
+    font-size: 30px;
+    cursor: pointer;
+}

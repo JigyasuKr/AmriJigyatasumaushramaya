@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>The Wish Wall - Celestial Treasury</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --obsidian: #0A0A0A;
+            --plum: #2D004F;
+            --emerald: #046307;
+            --gold: #D4AF37;
+            --silver: #C0C0C0;
+            --glass: rgba(10, 10, 10, 0.85);
+            --transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+    background-color: var(--obsidian);
+    /* Updated background code below */
+    background-image: url('https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217937/stars_bg_gg8hdb.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* Keeps the font and layout settings */
+    color: var(--silver);
+    font-family: 'Cinzel', serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+        /* --- Instruction Overlay --- */
+        #royalInstructions {
+            position: fixed;
+            inset: 0;
+            background: var(--obsidian);
+            z-index: 5000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: opacity 1.5s ease;
+        }
+
+        .instruction-box {
+            max-width: 600px;
+            background: var(--glass);
+            border: 2px solid var(--gold);
+            padding: 40px;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
+        }
+
+        .instruction-box h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .instruction-box p {
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: var(--silver);
+        }
+
+        /* --- Viewport Frame --- */
+        .royal-frame {
+            position: fixed;
+            inset: 0;
+            border: 8px solid var(--gold);
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+        .royal-frame::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border: 2px solid var(--silver);
+            opacity: 0.4;
+        }
+
+        .corner {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            fill: var(--gold);
+            z-index: 1001;
+        }
+        .tl { top: 0; left: 0; }
+        .tr { top: 0; right: 0; transform: rotate(90deg); }
+        .bl { bottom: 0; left: 0; transform: rotate(-90deg); }
+        .br { bottom: 0; right: 0; transform: rotate(180deg); }
+
+        header {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            text-align: center;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .counter {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--silver);
+        }
+
+        #wishWall {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            justify-items: center;
+            align-items: center;
+            padding: 120px 40px 180px 40px;
+            z-index: 10;
+        }
+
+        .mirror-surface {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 35vh;
+            background: linear-gradient(transparent, var(--obsidian));
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.8;
+        }
+
+        .ripple {
+            position: absolute;
+            bottom: 0;
+            width: 200%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, rgba(192, 192, 192, 0.05) 2px, transparent 4px);
+            animation: rippleMove 40s linear infinite;
+        }
+
+        @keyframes rippleMove {
+            from { transform: translateX(-25%) scaleY(1); }
+            to { transform: translateX(0%) scaleY(1.05); }
+        }
+
+        /* --- Lantern Component --- */
+        .lantern-container {
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 20;
+            user-select: none;
+        }
+
+        .lantern-container:hover {
+            transform: scale(1.3);
+            z-index: 100;
+        }
+
+        .lantern-svg {
+            width: 100px;
+            height: 140px;
+            filter: drop-shadow(0 0 15px var(--emerald));
+        }
+
+        .wish-preview {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            text-align: center;
+            font-size: 0.7rem;
+            color: rgb(255, 0, 0);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            padding: 10px;
+            text-shadow: 0 0 5px black;
+        }
+
+        .lantern-container:hover .wish-preview {
+            opacity: 1;
+        }
+
+        /* --- Input Panel --- */
+        .scribe-panel {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: clamp(300px, 90%, 600px);
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--gold);
+            padding: 20px;
+            border-radius: 2px;
+            z-index: 1100;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            pointer-events: all;
+        }
+
+        .panel-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--silver);
+            color: var(--gold);
+            font-family: 'Cinzel', serif;
+            padding: 10px;
+            outline: none;
+            font-size: 1.1rem;
+            width: 100%;
+        }
+
+        .submit-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            transition: var(--transition);
+            letter-spacing: 2px;
+            flex: 1;
+            white-space: nowrap;
+        }
+
+        .submit-btn:hover {
+            background: var(--gold);
+            color: var(--obsidian);
+        }
+
+        .btn-purge { border-color: #8b0000; color: #ff4d4d; }
+        .btn-purge:hover { background: #8b0000; color: white; }
+
+        .btn-ascend {
+            background: linear-gradient(45deg, var(--gold), #fff, var(--gold));
+            background-size: 200% auto;
+            color: var(--obsidian);
+            font-weight: bold;
+            animation: shine 3s linear infinite;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+
+        @media (max-width: 768px) {
+            #wishWall { grid-template-columns: repeat(2, 1fr); }
+            .lantern-svg { width: 70px; height: 100px; }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+            #wishWall { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (min-width: 1025px) {
+            #wishWall { grid-template-columns: repeat(5, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="royalInstructions">
+    <div class="instruction-box">
+        <h2>The Royal Proclamations</h2>
+        <p>Welcome to the Celestial Treasury. Here, your wishes take form. <br><br> 
+           <b>Scribe</b> your heart's desire to manifest a lantern. <br>
+           <b>Click</b> a lantern to release its spirit to the heavens. <br>
+           Click <b>Send Lantern</b> to add a wished lantern. <br> 
+            Click <b>Purge Wall</b> button to release all lantern at once. <br> 
+           Click <b>Enter The Future</b> to move ahead. <br> 
+          Do not click <b>Enter the Future</b> without sending any lantern.</p>
+        <button class="submit-btn" onclick="closeInstructions()">✦ Enter Treasury ✦</button>
+    </div>
+</div>
+
+<div class="royal-frame">
+    <svg class="corner tl" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L20 10 L20 100 L0 100 Z M30 30 L70 30 L70 40 L30 40 Z"/></svg>
+    <svg class="corner tr" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L20 10 L20 100 L0 100 Z M30 30 L70 30 L70 40 L30 40 Z"/></svg>
+    <svg class="corner bl" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L20 10 L20 100 L0 100 Z M30 30 L70 30 L70 40 L30 40 Z"/></svg>
+    <svg class="corner br" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L20 10 L20 100 L0 100 Z M30 30 L70 30 L70 40 L30 40 Z"/></svg>
+</div>
+
+<header>
+    <h1>The Royal Wish Wall</h1>
+    <div class="counter" id="lanternCounter">0 Wishes Adrift
+    </div>
+</header>
+
+<main id="wishWall"></main>
+
+<div class="mirror-surface">
+    <div class="ripple"></div>
+</div>
+
+<section class="scribe-panel">
+    <input type="text" id="wishInput" placeholder="Scribe your wish..." maxlength="140">
+    <div class="panel-controls">
+        <button class="submit-btn" id="submitWish">✦ Send Lantern ✦</button>
+        <button class="submit-btn btn-purge" id="purgeBtn" onclick="clearTreasury()">Purge Wall</button>
+        <button class="submit-btn btn-ascend" id="ascendBtn" style="display:none;" onclick="moveToNextPage()">✦ Enter The Future ✦</button>
+    </div>
+</section>
+
+<script>
+    const wishWall = document.getElementById('wishWall');
+    const wishInput = document.getElementById('wishInput');
+    const submitBtn = document.getElementById('submitWish');
+    const purgeBtn = document.getElementById('purgeBtn');
+    const ascendBtn = document.getElementById('ascendBtn');
+    const counterDisplay = document.getElementById('lanternCounter');
+
+    let wishes = JSON.parse(localStorage.getItem('celestial_wishes')) || [];
+    let lanterns = [];
+    const MAX_LANTERNS = 25;
+
+    class Lantern {
+        constructor(id, text) {
+            this.id = id;
+            this.text = text;
+            this.time = Math.random() * 100;
+            this.isAscending = false;
+            this.element = this.createDOM();
+        }
+
+        createDOM() {
+            const div = document.createElement('div');
+            div.className = 'lantern-container';
+            div.innerHTML = `
+                <svg class="lantern-svg" viewBox="0 0 100 140">
+                    <defs>
+                        <radialGradient id="glow-${this.id}">
+                            <stop offset="0%" stop-color="#046307" />
+                            <stop offset="100%" stop-color="transparent" />
+                        </radialGradient>
+                    </defs>
+                    <circle cx="50" cy="60" r="40" fill="url(#glow-${this.id})" opacity="0.6" />
+                    <path d="M30 20 Q50 10 70 20 L80 90 Q50 100 20 90 Z" fill="#D4AF37" opacity="0.9" />
+                    <rect x="35" y="25" width="30" height="60" fill="#f0e68c" opacity="0.8" />
+                    <path d="M50 95 L50 130" stroke="#D4AF37" stroke-width="2" />
+                    <circle cx="50" cy="135" r="3" fill="#D4AF37" />
+                </svg>
+                <div class="wish-preview">${this.text}</div>
+            `;
+            
+            div.onclick = () => this.ascend();
+            wishWall.appendChild(div);
+            return div;
+        }
+
+        ascend() {
+            if(this.isAscending) return;
+            this.isAscending = true;
+            this.element.style.transition = "transform 3s cubic-bezier(0.4, 0, 0.2, 1), opacity 2s ease-in";
+            this.element.style.transform = "translateY(-120vh) scale(0.2) rotate(20deg)";
+            this.element.style.opacity = "0";
+            this.element.style.pointerEvents = "none";
+
+            setTimeout(() => {
+                this.remove();
+            }, 2500);
+        }
+
+        remove() {
+            wishes = wishes.filter(w => w.id !== this.id);
+            localStorage.setItem('celestial_wishes', JSON.stringify(wishes));
+            this.element.remove();
+            lanterns = lanterns.filter(l => l.id !== this.id);
+            updateUIState();
+        }
+
+        update() {
+            if (this.isAscending) return;
+            this.time += 0.02;
+            const sway = Math.sin(this.time) * 15;
+            const float = Math.cos(this.time * 0.5) * 10;
+            this.element.style.transform = `translate(${sway}px, ${float}px) rotate(${Math.sin(this.time) * 2}deg)`;
+        }
+    }
+
+    function closeInstructions() {
+        document.getElementById('royalInstructions').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('royalInstructions').style.display = 'none';
+        }, 1500);
+    }
+
+    function init() {
+        wishes.forEach((w, i) => {
+            if (i < MAX_LANTERNS) {
+                lanterns.push(new Lantern(w.id, w.text));
+            }
+        });
+        updateUIState();
+        animate();
+    }
+
+    function updateUIState() {
+        counterDisplay.innerText = `${wishes.length} Wishes Adrift`;
+        if (wishes.length === 0) {
+            ascendBtn.style.display = 'block';
+            purgeBtn.style.display = 'none';
+        } else {
+            ascendBtn.style.display = 'none';
+            purgeBtn.style.display = 'block';
+        }
+    }
+
+    function addWish() {
+        const text = wishInput.value.trim();
+        if (!text || wishes.length >= MAX_LANTERNS) return;
+
+        const newWish = { id: Date.now(), text: text };
+        wishes.unshift(newWish);
+        localStorage.setItem('celestial_wishes', JSON.stringify(wishes));
+        
+        lanterns.push(new Lantern(newWish.id, newWish.text));
+        wishInput.value = '';
+        updateUIState();
+    }
+
+    function clearTreasury() {
+        if(!confirm("Are you sure you wish to clear all spirits from the wall?")) return;
+        wishes = [];
+        localStorage.removeItem('celestial_wishes');
+        wishWall.innerHTML = '';
+        lanterns = [];
+        updateUIState();
+    }
+
+    function moveToNextPage() {
+        document.body.style.transition = "opacity 2s";
+        document.body.style.opacity = "0";
+        setTimeout(() => {
+            window.location.href = "page14.html"; // Change this to your destination
+        }, 2000);
+    }
+
+    function animate() {
+        lanterns.forEach(l => l.update());
+        requestAnimationFrame(animate);
+    }
+
+    submitBtn.addEventListener('click', addWish);
+    wishInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addWish(); });
+
+    init();
+</script>
+</body>
+</html>

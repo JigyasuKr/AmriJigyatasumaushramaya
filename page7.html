@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Royal Dinner</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dinner.css">
+</head>
+<body class="dinner-body">
+    <div id="table-overlay"></div>
+
+    <div id="scroll-wrapper">
+        <div id="seal-container" onclick="breakSeal()">
+            <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217939/royal_seal_pnp121.png" alt="Royal Seal" id="main-seal">
+            <p id="seal-instruction">Click here on the Seal to Begin, My Queen. <br> 
+            The Seal of "The Kingdom of Jigyasu & Amrita". <br> 
+             Do check out for the Chief's Secret on "The Royal Menu". <br>
+            Do look at the background, Queen...</p>
+        </div>
+
+        <div id="scroll-content" class="scroll-hidden">
+            <div class="parchment">
+                <h1 class="royal-title">The Royal Menu</h1>
+                
+                <div class="menu-item" onmouseover="showSecret(1)" onmouseout="hideSecret()">
+                    <h3>Appetizer</h3>
+                    <h2>Emerald Garden Bruschetta</h2>
+                    <p class="chef-secret" id="secret-1">Chef's Secret: Hand-picked herbs from our private garden, just for you.</p>
+                </div>
+
+                <div class="menu-item" onmouseover="showSecret(2)" onmouseout="hideSecret()">
+                    <h3>Main Course</h3>
+                    <h2>The King’s Signature Golden Steak</h2>
+                    <p class="chef-secret" id="secret-2">Chef's Secret: Dusted with edible silver to match the shine in your eyes.</p>
+                </div>
+
+                <div class="menu-item" onmouseover="showSecret(3)" onmouseout="hideSecret()">
+                    <h3>Dessert</h3>
+                    <h2>Amrita’s Velvet Delight</h2>
+                    <p class="chef-secret" id="secret-3">Chef's Secret: Infused with a sweetness that rivals your smile.</p>
+                </div>
+
+                <div class="menu-item" onmouseover="showSecret(4)" onmouseout="hideSecret()">
+                    <h3>The Cellar</h3>
+                    <h2>The Royal Wine</h2>
+                    <p class="chef-secret" id="secret-4">Chef's Secret: Aged to perfection, celebrating our timeless bond.</p>
+                </div>
+
+                <div id="cheers-section">
+                    <button class="royal-btn" onclick="startCheers()" style="font-family: 'Garamond', serif; color: black;">Raise a Toast</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cheers-overlay" class="hidden">
+        <div class="glass-container-cheers">
+            <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217938/wine_glasses_ypqrly.png" alt="Glasses" id="left-glass">
+            <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217938/wine_glasses_ypqrly.png" alt="Glasses" id="right-glass">
+        </div>
+        <h1 id="final-message"></h1>
+        <a href="page8.html" class="royal-btn">To The Royal Atlas, My Love</a>
+    </div>
+
+    <audio id="dinner-music" loop src="https://res.cloudinary.com/dsitvhpg2/video/upload/v1767218159/violin_serenade_wgjgvf.mp3"></audio>
+    <audio id="clink-sound" src="https://res.cloudinary.com/dsitvhpg2/video/upload/v1767218136/clink_rojwia.mp3"></audio>
+
+    <script src="dinner.js"></script>
+</body>
+</html>

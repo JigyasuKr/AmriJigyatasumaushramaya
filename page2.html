@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Royal Proclamation</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        #ballroom-video {
+    position: fixed;
+    right: 0; 
+    bottom: 0;
+    min-width: 100%; 
+    min-height: 100%;
+    width: auto; 
+    height: auto;
+    z-index: -1; /* Keep it at -1 */
+    filter: brightness(40%); 
+    object-fit: cover; /* Ensures it fills the screen without stretching */
+    background-color: black; /* Acts as a placeholder while loading */
+}
+
+/* Add this to ensure the body doesn't hide the video */
+.proclamation-body {
+    background: transparent !important; 
+}
+    </style>
+</head>
+<body class="proclamation-body">
+    <video autoplay muted loop playsinline id="ballroom-video">
+        <source src="https://res.cloudinary.com/dsitvhpg2/video/upload/v1767222449/proclamation_bg_yw8ucj.mp4" type="video/mp4">
+    </video>
+
+    <div class="glass-container">
+        <div class="proclamation-box">
+            <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217939/royal_seal_pnp121.png" alt="Royal Seal" class="royal-seal-img">
+            <h2 class="emerald-glow">The King's Decree</h2>
+            <hr class="silver-line">
+            <div id="typed-text" class="message-text"></div>
+            <div id="signature" class="hidden">
+                <p>- King Jigyasu</p>
+                <a href="page3.html" class="royal-btn">Enter the Candle Room</a>
+            </div>
+        </div>
+    </div>
+    <audio id="page2-audio" loop>
+            <source src="https://res.cloudinary.com/dsitvhpg2/video/upload/v1767218151/decree_csqqti.mp3" type="audio/mpeg">
+       </audio>
+
+    <script src="proclamation.js"></script>
+</body>
+</html>

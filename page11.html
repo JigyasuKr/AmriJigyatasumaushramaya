@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Royal Gallery of Remembrance</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --emerald: #046307;
+            --gold: #D4AF37;
+            --silver: #C0C0C0;
+            --purple: #4B0082;
+            --black: #010101;
+            --transition-speed: 0.6s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+    background-color: var(--black);
+    background-image: linear-gradient(rgba(1, 1, 1, 0.8), rgba(1, 1, 1, 0.8)), url('https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217907/card_match_gimkdy.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Keeps background still while content scrolls */
+    min-height: 100vh;
+    display: block; /* Changed from flex to allow natural scrolling */
+    font-family: 'EB Garamond', serif;
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden;
+}
+
+/* Custom Royal Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: var(--black);
+    border-left: 1px solid var(--gold);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--gold);
+    border: 2px solid var(--black);
+    border-radius: 5px;
+}
+
+/* Viewport Frame - Ensure it stays fixed during scroll */
+.royal-frame {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border: 8px solid var(--gold);
+    outline: 3px solid var(--silver);
+    outline-offset: -11px;
+    pointer-events: none; /* Allows clicking cards "through" the frame */
+    z-index: 100;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+}
+
+.game-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px 100px 20px; /* Top/Bottom padding for frame clearance */
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+        .corner-decoration {
+            position: absolute;
+            width: 40px; height: 40px;
+            border: 4px solid var(--gold);
+            z-index: 101;
+        }
+        .top-left { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        .top-right { top: 15px; right: 15px; border-left: none; border-bottom: none; }
+        .bottom-left { bottom: 15px; left: 15px; border-right: none; border-top: none; }
+        .bottom-right { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 2rem;
+            color: var(--silver);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Game Board Grid */
+        .game-board {
+            display: grid;
+            gap: 15px;
+            perspective: 1000px;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        /* Responsive Grid Logic */
+        @media (min-width: 1024px) { .game-board { grid-template-columns: repeat(4, 180px); } }
+        @media (max-width: 1023px) and (min-width: 768px) { .game-board { grid-template-columns: repeat(4, 150px); } }
+        @media (max-width: 767px) { .game-board { grid-template-columns: repeat(2, 140px); gap: 10px; } }
+
+        /* Card Styles */
+        .card {
+            aspect-ratio: 1/1;
+            position: relative;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform var(--transition-speed) cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .card.flipped { transform: rotateY(180deg); }
+        
+        .card.matched {
+            animation: matchPulse 0.6s ease-in-out 3;
+            cursor: default;
+        }
+
+        .card.mismatch {
+            animation: shake 0.4s linear;
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%; height: 100%;
+            backface-visibility: hidden;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, var(--purple), #2a004a);
+            border: 3px solid var(--gold);
+        }
+
+        .card-back::after {
+            content: '';
+            width: 60%; height: 60%;
+            background: url('https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217939/royal_seal_pnp121.png') no-repeat center;
+            background-size: contain;
+            opacity: 0.8;
+        }
+
+        .card-front {
+            background: var(--black);
+            transform: rotateY(180deg);
+            border: 2px solid var(--silver);
+        }
+
+        .card-front img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        /* Animations */
+        @keyframes matchPulse {
+            0%, 100% { transform: rotateY(180deg) scale(1); box-shadow: 0 0 0 var(--gold); }
+            50% { transform: rotateY(180deg) scale(1.05); box-shadow: 0 0 20px var(--gold); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotateY(180deg) translateX(0); }
+            25% { transform: rotateY(180deg) translateX(-10px); }
+            75% { transform: rotateY(180deg) translateX(10px); }
+        }
+
+        /* Victory Modal */
+        #victory-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(1, 1, 1, 0.96);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            border: 15px double var(--gold);
+            text-align: center;
+        }
+
+        #victory-modal.show { display: flex; animation: modalFade 0.4s ease-out; }
+
+        @keyframes modalFade {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .victory-title {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .victory-stats {
+            color: var(--silver);
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            background: transparent;
+            color: var(--gold);
+            border: 2px solid var(--gold);
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            font-family: 'EB Garamond', serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: var(--gold);
+            color: var(--black);
+            box-shadow: 0 0 15px var(--gold);
+        }
+
+        /* Accessibility */
+        .card:focus {
+            outline: 3px solid white;
+            outline-offset: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="royal-frame">
+        <div class="corner-decoration top-left"></div>
+        <div class="corner-decoration top-right"></div>
+        <div class="corner-decoration bottom-left"></div>
+        <div class="corner-decoration bottom-right"></div>
+    </div>
+
+    <div class="game-container">
+        <header>
+            <h1>Match The Royal Gallery of Rememberance</h1>
+            <div class="stats-bar">
+                <span>Moves: <span id="moves-count">0</span></span>
+                <span>Time: <span id="timer">00:00</span></span>
+            </div>
+        </header>
+
+        <div class="game-board" id="game-board">
+            </div>
+    </div>
+
+    <div id="victory-modal">
+        <div class="victory-title">Royal Decree of Victory</div>
+        <div class="victory-stats" id="final-stats"></div>
+        <div style="font-size: 4rem; margin-bottom: 2rem;">🏆</div>
+        <div>
+            <button class="btn" onclick="game.init()">Play Again</button>
+            <a href="page12.html" class="btn">Enter The Royal Bounty, A Heart Catching Game</a>
+        </div>
+    </div>
+
+    <script>
+        class MemoryGame {
+            constructor() {
+                this.board = document.getElementById('game-board');
+                this.movesDisplay = document.getElementById('moves-count');
+                this.timerDisplay = document.getElementById('timer');
+                this.modal = document.getElementById('victory-modal');
+                this.finalStats = document.getElementById('final-stats');
+                
+                this.photos = ['https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217928/photo1_zk2rmm.png', 'https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217920/photo2_sjgr4u.png', 'https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217928/photo3_fgwt6j.jpg', 'https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217930/photo4_dm4dtj.png', 
+                               'https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217928/photo5_o1cptv.png', 'https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217934/photo6_n5ulcq.png', 'https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217926/photo7_xgj2jd.png', 'https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217930/photo8_zhseif.png'];
+                this.init();
+            }
+
+            init() {
+                // Reset State
+                this.cards = [...this.photos, ...this.photos];
+                this.flippedCards = [];
+                this.matchedCount = 0;
+                this.moves = 0;
+                this.seconds = 0;
+                this.isProcessing = false;
+                this.modal.classList.remove('show');
+                
+                this.updateMoves();
+                this.shuffle();
+                this.createBoard();
+                this.startTimer();
+                this.preloadImages();
+            }
+
+            shuffle() {
+                // Fisher-Yates Shuffle
+                for (let i = this.cards.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+                }
+            }
+
+            preloadImages() {
+                this.photos.forEach(src => {
+                    const img = new Image();
+                    img.src = src;
+                });
+            }
+
+            createBoard() {
+                this.board.innerHTML = '';
+                this.cards.forEach((photo, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.dataset.value = photo;
+                    card.tabIndex = 0; // Keyboard a11y
+                    
+                    card.innerHTML = `
+                        <div class="card-face card-back"></div>
+                        <div class="card-face card-front">
+                            <img src="${photo}" alt="Royal Memory">
+                        </div>
+                    `;
+
+                    card.addEventListener('click', () => this.flipCard(card));
+                    card.addEventListener('keypress', (e) => { if(e.key === 'Enter') this.flipCard(card); });
+                    
+                    this.board.appendChild(card);
+                });
+            }
+
+            flipCard(card) {
+                if (this.isProcessing || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+                card.classList.add('flipped');
+                this.flippedCards.push(card);
+
+                if (this.flippedCards.length === 2) {
+                    this.moves++;
+                    this.updateMoves();
+                    this.checkForMatch();
+                }
+            }
+
+            checkForMatch() {
+                this.isProcessing = true;
+                const [card1, card2] = this.flippedCards;
+                const isMatch = card1.dataset.value === card2.dataset.value;
+
+                if (isMatch) {
+                    this.handleMatch(card1, card2);
+                } else {
+                    this.handleMismatch(card1, card2);
+                }
+            }
+
+            handleMatch(card1, card2) {
+                setTimeout(() => {
+                    card1.classList.add('matched');
+                    card2.classList.add('matched');
+                    this.matchedCount += 2;
+                    this.flippedCards = [];
+                    this.isProcessing = false;
+
+                    if (this.matchedCount === this.cards.length) {
+                        this.winGame();
+                    }
+                }, 500);
+            }
+
+            handleMismatch(card1, card2) {
+                setTimeout(() => {
+                    card1.classList.add('mismatch');
+                    card2.classList.add('mismatch');
+                    
+                    setTimeout(() => {
+                        card1.classList.remove('flipped', 'mismatch');
+                        card2.classList.remove('flipped', 'mismatch');
+                        this.flippedCards = [];
+                        this.isProcessing = false;
+                    }, 1000);
+                }, 500);
+            }
+
+            startTimer() {
+                clearInterval(this.timerInterval);
+                this.timerInterval = setInterval(() => {
+                    this.seconds++;
+                    const mins = Math.floor(this.seconds / 60).toString().padStart(2, '0');
+                    const secs = (this.seconds % 60).toString().padStart(2, '0');
+                    this.timerDisplay.textContent = `${mins}:${secs}`;
+                }, 1000);
+            }
+
+            updateMoves() {
+                this.movesDisplay.textContent = this.moves;
+            }
+
+            winGame() {
+                clearInterval(this.timerInterval);
+                const finalTime = this.timerDisplay.textContent;
+                this.finalStats.textContent = `${this.moves} moves | ${finalTime} time`;
+                
+                setTimeout(() => {
+                    this.modal.classList.add('show');
+                }, 1000);
+            }
+        }
+
+        // Initialize Game
+        const game = new MemoryGame();
+    </script>
+</body>
+</html>

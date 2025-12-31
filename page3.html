@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Royal Wish</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body, html{
+            overflow-y: auto !important; /* Overrides the 'hidden' setting */
+            height: auto;
+            min-height: 100%;
+        }
+    </style>
+</head>
+<body class="candle-page">
+    <div id="confetti-wrapper"></div>
+
+    <div class="candle-container">
+        <h2 class="wish-title">Make a Royal Wish My Queen, Amrita</h2>
+        
+        <div class="meter-container">
+            <p>First Tap the Candles to allow Mic access....</p>
+            <p>Then blow into the Mic to extinguish the flames!</p>
+            <div class="meter-bar"><div id="breath-level"></div></div>
+        </div>
+        
+        <div class="cake-area">
+            <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217903/cake_base_ikmhlz.png" alt="Royal Cake" class="cake-img">
+            <div class="candles">
+                <div class="candle"><div class="flame"></div></div>
+                <div class="candle"><div class="flame"></div></div>
+                <div class="candle"><div class="flame"></div></div>
+            </div>
+        </div>
+        <div id="wish-message" class="hidden-wish">
+            <h1 class="grand-wish">Happiest New Year 2026 and all joyful years ahead with me My wife, Amrita.</h1>
+            <a href="page4.html" class="royal-btn">Proceed to Cake Cutting</a>
+        </div>
+    </div>
+    <div class="photo-container-right">
+    <div class="photo-box">
+        <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217914/memory1_m2annp.jpg" alt="Memory 1">
+    </div>
+    <div class="photo-box">
+        <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217915/memory2_kfsi6k.jpg" alt="Memory 2">
+    </div>
+</div>
+    <script src="candle_mic.js"></script>
+</body>
+</html>

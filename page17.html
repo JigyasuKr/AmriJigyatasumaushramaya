@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Imperial Vault - Virtual Gift Box v5.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,500;1,400&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --obsidian: #0A0A0A;
+            --regal-purple: #2D004F;
+            --emerald: #046307;
+            --gold: #D4AF37;
+            --silver: #C0C0C0;
+            --transition-speed: 0.8s;
+            --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --box-size: 300px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(rgba(10, 10, 10, 0.6), rgba(10, 10, 10, 0.6)), url('https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217900/background_hall_zangc9.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Lora', serif;
+            perspective: 1500px;
+        }
+
+        /* --- Header --- */
+        .royal-header {
+            position: fixed;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-family: 'Cinzel', serif, 'Garamond';
+            color: var(--gold);
+            font-size: 3rem;
+            z-index: 2000;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+            pointer-events: none;
+        }
+
+        /* --- Frame --- */
+        .imperial-frame {
+            position: fixed;
+            inset: 0;
+            border: 8px solid var(--gold);
+            outline: 2px solid var(--silver);
+            outline-offset: -12px;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .corner { position: absolute; width: 100px; height: 100px; fill: var(--gold); }
+        .tl { top: 15px; left: 15px; }
+        .tr { top: 15px; right: 15px; transform: rotate(90deg); }
+        .bl { bottom: 15px; left: 15px; transform: rotate(-90deg); }
+        .br { bottom: 15px; right: 15px; transform: rotate(180deg); }
+
+        /* --- 3D Vault Scene --- */
+        .vault-scene {
+            position: relative;
+            width: var(--box-size);
+            height: var(--box-size);
+            transform-style: preserve-3d;
+            z-index: 5;
+        }
+
+        .box-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform var(--transition-speed) var(--ease);
+            cursor: pointer;
+        }
+
+        .face {
+            position: absolute;
+            width: var(--box-size);
+            height: var(--box-size);
+            background: conic-gradient(from 45deg, var(--obsidian), var(--regal-purple), var(--obsidian));
+            border: 2px solid var(--gold);
+            transition: all var(--transition-speed) var(--ease);
+        }
+
+        .face::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10Q50 0 90 10Q100 50 90 90Q50 100 10 90Q0 50 10 10' fill='none' stroke='%23D4AF37' stroke-width='0.5' opacity='0.3'/%3E%3C/svg%3E");
+            opacity: 0.4;
+        }
+
+        .front  { transform: translateZ(calc(var(--box-size) / 2)); }
+        .back   { transform: rotateY(180deg) translateZ(calc(var(--box-size) / 2)); }
+        .left   { transform: rotateY(-90deg) translateZ(calc(var(--box-size) / 2)); }
+        .right  { transform: rotateY(90deg) translateZ(calc(var(--box-size) / 2)); }
+        .bottom { transform: rotateX(-90deg) translateZ(calc(var(--box-size) / 2)); background: var(--obsidian); }
+        .lid    { 
+            transform: rotateX(90deg) translateZ(calc(var(--box-size) / 2)); 
+            background: linear-gradient(135deg, var(--gold), #8A6D3B, var(--gold));
+            z-index: 2;
+        }
+
+        /* --- Opening Logic --- */
+        .opened .lid { transform: translateY(-300px) rotateX(200deg) scale(0); opacity: 0; }
+        .opened .front { transform: rotateX(-90deg) translateY(calc(var(--box-size) / 2)); transform-origin: bottom; }
+        .opened .back  { transform: rotateY(180deg) rotateX(-90deg) translateY(calc(var(--box-size) / 2)); transform-origin: bottom; }
+        .opened .left  { transform: rotateY(-90deg) rotateX(-90deg) translateY(calc(var(--box-size) / 2)); transform-origin: bottom; }
+        .opened .right { transform: rotateY(90deg) rotateX(-90deg) translateY(calc(var(--box-size) / 2)); transform-origin: bottom; }
+
+        /* --- Content Overlay --- */
+        #contentReveal {
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 300px;
+            text-align: center;
+            opacity: 0;
+            transition: all 1s var(--ease) 0.5s;
+            z-index: 2500;
+            pointer-events: none;
+        }
+
+        body.is-vault-open #contentReveal {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .scroll {
+            background: #f2e8c9;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            margin-bottom: 30px;
+        }
+        .scroll h2 { font-family: 'Cinzel'; color: #4a3701; font-size: 1.2rem; margin-bottom: 10px; border-bottom: 1px solid var(--gold); }
+        .scroll p { font-size: 0.9rem; color: #333; line-height: 1.4; }
+
+        .carousel {
+            width: 150px;
+            height: 80px;
+            margin: 0 auto;
+            transform-style: preserve-3d;
+            animation: rotateCarousel 15s linear infinite;
+        }
+        @keyframes rotateCarousel { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+        
+        .carousel-item {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--gold);
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', 'Garamond', serif;
+            color: white;
+            font-size: 0.7rem;
+            backface-visibility: hidden;
+        }
+
+        /* --- Updated Button Group Container --- */
+        .royal-controls {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            display: flex;
+            gap: 20px;
+            z-index: 3000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.8s var(--ease) 1s;
+        }
+
+        body.is-vault-open .royal-controls {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: all;
+        }
+
+        .btn-royal {
+            padding: 15px 30px;
+            font-family: 'Cinzel';
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.7);
+            transition: 0.3s;
+        }
+
+        .btn-claim {
+            background: linear-gradient(to bottom, #D4AF37, #8A6D3B);
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .btn-reseal {
+            background: rgba(0,0,0,0.7);
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+
+        .btn-royal:hover { transform: scale(1.05); }
+
+        .particle { position: absolute; width: 6px; height: 6px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 4000; }
+    </style>
+</head>
+<body id="bodyTag">
+
+    <div class="imperial-frame">
+        <svg class="corner tl" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L20 10 L10 20 L10 100 L0 100 Z"/></svg>
+        <svg class="corner tr" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L20 10 L10 20 L10 100 L0 100 Z"/></svg>
+        <svg class="corner bl" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L20 10 L10 20 L10 100 L0 100 Z"/></svg>
+        <svg class="corner br" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L20 10 L10 20 L10 100 L0 100 Z"/></svg>
+    </div>
+
+    <h1 class="royal-header">The Royal Virtual Crest <br> <hr style="border: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--silver), transparent); "></h1>
+    <hr style="color: var(--silver);">
+
+    <div class="vault-scene">
+        <div class="box-container" id="mainBox" onclick="toggleVault()">
+            <div class="face front"></div>
+            <div class="face back"></div>
+            <div class="face left"></div>
+            <div class="face right"></div>
+            <div class="face bottom"></div>
+            <div class="face lid"></div>
+        </div>
+    </div>
+
+    <div id="contentReveal">
+        <div class="scroll">
+            <h2>A Message from the Vault</h2>
+            <p>IloveYou My Queen🖤 always, This 2026 and all years ahead. Your unsaid Qualities has immense value in my heart. Rule My Kingdom Forever. <br> -King Jigyasu💜</p>
+        </div>
+        
+        <div class="carousel">
+            <div class="carousel-item" style="transform: rotateY(0deg) translateZ(110px); background: rgba(37, 23, 43, 0.5);">BOLD</div>
+            <div class="carousel-item" style="transform: rotateY(60deg) translateZ(110px); background: rgba(37, 23, 43, 0.5);">BEAUTIFUL</div>
+            <div class="carousel-item" style="transform: rotateY(120deg) translateZ(110px); background: rgba(37, 23, 43, 0.5);">AMBITIOUS</div>
+            <div class="carousel-item" style="transform: rotateY(180deg) translateZ(110px); background: rgba(37, 23, 43, 0.5);">QUEEN</div>
+            <div class="carousel-item" style="transform: rotateY(240deg) translateZ(110px); background: rgba(37, 23, 43, 0.5);">THINKER</div>
+            <div class="carousel-item" style="transform: rotateY(300deg) translateZ(110px); background: rgba(37, 23, 43, 0.5);">RESPONSIBLE</div>
+        </div>
+    </div>
+
+    <div class="royal-controls">
+        <button class="btn-royal btn-claim" onclick="window.location.href='page18.html'">👑 Claim Imperial Reward <br> Grand Celebration</button>
+        <button class="btn-royal btn-reseal" onclick="toggleVault()">🔒 Re-seal Vault</button>
+    </div>
+
+    <script>
+        const box = document.getElementById('mainBox');
+        const body = document.getElementById('bodyTag');
+        let isOpened = false;
+        let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            if (isOpened) return;
+            targetY = (e.clientX - window.innerWidth / 2) * 0.1;
+            targetX = (e.clientY - window.innerHeight / 2) * -0.1;
+        });
+
+        function animate() {
+            if (!isOpened) {
+                currentX += (targetX - currentX) * 0.05;
+                currentY += (targetY - currentY) * 0.05;
+                box.style.transform = `rotateX(${currentX}deg) rotateY(${currentY}deg)`;
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        function toggleVault() {
+            isOpened = !isOpened;
+            if (isOpened) {
+                box.classList.add('opened');
+                body.classList.add('is-vault-open');
+                createConfetti();
+            } else {
+                box.classList.remove('opened');
+                body.classList.remove('is-vault-open');
+                box.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            }
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                document.body.appendChild(p);
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 4 + Math.random() * 8;
+                const vx = Math.cos(angle) * velocity;
+                const vy = Math.sin(angle) * velocity;
+                let posX = window.innerWidth / 2;
+                let posY = window.innerHeight / 2;
+                let life = 1;
+                const pAnim = () => {
+                    posX += vx; posY += vy; life -= 0.015;
+                    p.style.left = posX + 'px'; p.style.top = posY + 'px';
+                    p.style.opacity = life;
+                    if (life > 0) requestAnimationFrame(pAnim);
+                    else p.remove();
+                };
+                pAnim();
+            }
+        }
+    </script>
+</body>
+</html>

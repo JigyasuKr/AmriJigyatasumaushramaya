@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Under the Celestial Watch</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+    /* 1. OVERRIDE style.css defaults */
+    body.proclamation-body {
+        background-color: transparent !important; /* Allows the ::before image to show */
+        overflow-y: auto !important; /* Restores scrolling so text isn't cut off */
+        height: auto;
+        min-height: 100vh;
+        position: relative;
+    }
+
+    /* 2. THE BACKGROUND LAYER */
+    .proclamation-body::before {
+        content: "";
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        /* Change this filename for each specific file */
+        background: url('https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217897/balcony_embrace_s79tuh.jpg') no-repeat center center/cover; 
+        filter: brightness(30%) blur(8px);
+        z-index: -2; /* Moves it behind the black background layer */
+        transform: scale(1.1);
+    }
+
+    /* 3. THE GLASS CONTAINER */
+    .glass-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 40px 20px; /* Extra padding for mobile */
+        box-sizing: border-box;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* 4. THE PROCLAMATION BOX */
+    .proclamation-box {
+        max-width: 500px;
+        width: 100%;
+        background: rgba(4, 57, 39, 0.4) !important; 
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--silver);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 0 30px rgba(46, 8, 84, 0.5);
+
+        /* --- ADD THESE TWO LINES TO RESTORE BOX SCROLLING --- */
+        max-height: 80vh;    /* Limits box height to 80% of the screen */
+        overflow-y: auto;   /* Adds the scrollbar back to the box only */
+    }
+
+    /* Keep this to ensure the box doesn't get hidden behind the scrollbar */
+    .proclamation-box::-webkit-scrollbar {
+        width: 8px;
+    }
+    .proclamation-box::-webkit-scrollbar-thumb {
+        background: var(--silver);
+        border-radius: 10px;
+    }
+
+    /* 5. FRONT IMAGE CONSTRAINT (Crucial for text visibility) */
+    .proclamation-box img {
+        width: 100% !important;
+        max-height: 400px !important; /* Forces the image to stay small enough for text to show */
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        border: 1px solid var(--silver) !important;
+    }
+
+    .message-text {
+        font-size: 1.2rem;
+        line-height: 1.6;
+        color: white;
+        margin-bottom: 25px;
+        text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+    }
+</style>
+</head>
+<body class="proclamation-body">
+    <div class="glass-container">
+        <div class="proclamation-box" style="border-color: #C0C0C0;">
+            <h1 style="color: #C0C0C0; text-transform: uppercase; letter-spacing: 5px;">Under the Celestial Watch</h1>
+            <hr class="silver-line">
+            <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217897/balcony_embrace_s79tuh.jpg" alt="Our Embrace" style="width:100%; border-radius:15px; border: 1px solid #C0C0C0; margin-bottom: 20px;">
+            <p class="message-text">
+                High above the kingdom, wrapped in the cool night air, I find my warmth in your embrace. As we watch the stars, I realize they are merely distant reflections of the light you bring into my world. In this hug, I have everything I need—my queen, my home, and my universe.
+            </p>
+            <a href="page6.html" class="royal-btn">Back to the Stars</a>
+        </div>
+    </div>
+       <audio id="memory-audio" loop>
+            <source src="https://res.cloudinary.com/dsitvhpg2/video/upload/v1767218135/balcony_theme_njqzza.mp3" type="audio/mpeg">
+       </audio>
+<script>
+    // Browsers require a click to play audio. 
+    // Since she clicked the "Save" button to get here, 
+    // we play the music as soon as she interacts with this page.
+    window.addEventListener('click', () => {
+        const audio = document.getElementById('memory-audio');
+        audio.play();
+    }, { once: true });
+</script>
+</body>
+</html>

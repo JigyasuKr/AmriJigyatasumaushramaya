@@ -1,0 +1,129 @@
+.dinner-body {
+    background: url('https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217908/dinner_bg_x3ufjc.jpg') no-repeat center center/cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+}
+
+#table-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+}
+
+#scroll-wrapper {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+#seal-container {
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+#main-seal {
+    width: 300px;
+    filter: drop-shadow(0 0 15px #FFD700);
+}
+
+.parchment {
+    background: url('https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217896/atlas_texture_kargjk.jpg');
+    padding: 60px;
+    width: 400px;
+    min-height: 100px;
+    border-left: 10px solid #8b4513;
+    border-right: 10px solid #8b4513;
+    box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    color: #4b2c20;
+    transition: all 2s ease-in-out;
+}
+
+.scroll-hidden .parchment {
+    height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+    opacity: 0;
+}
+
+.chef-secret {
+    font-style: italic;
+    color: #010000;
+    font-size: 1rem;
+    height: 0;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.show-secret {
+    height: auto;
+    opacity: 1;
+    margin-top: 10px;
+}
+
+/* Cheers Animation */
+#cheers-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.glass-container-cheers { display: flex; gap: 10px; }
+#left-glass { transform: rotate(15deg); }
+#right-glass { transform: rotate(-15deg) scaleX(-1); }
+
+.clink-animation {
+    animation: clinkEffect 0.5s forwards;
+}
+
+@keyframes clinkEffect {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(20px); }
+    100% { transform: translateX(25px); }
+}
+
+/* Fix for the Hidden Overlay */
+.hidden {
+    display: none !important;
+}
+
+/* Ensure the title is visible on the parchment */
+.royal-title {
+    font-family: 'Garamond', serif;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    border-bottom: 2px double #8b4513;
+    padding-bottom: 10px;
+}
+
+/* Scroll Instruction Styling */
+#seal-instruction {
+    color: #ffffff;
+    margin-top: 15px;
+    font-size: 1.5rem;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+#final-message{
+    color: --var(silver);
+    font-family: 'Garamond', serif;
+    text-align: center;
+    margin-left: 30vw;
+    margin-right: 30vw;
+}
+

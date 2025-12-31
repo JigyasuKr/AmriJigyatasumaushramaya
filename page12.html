@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Royal Bounty: Catch the Hearts</title>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #046307;
+            --gold: #D4AF37;
+            --silver: #C0C0C0;
+            --purple: #4B0082;
+            --black: #010101;
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--black);
+            font-family: 'EB Garamond', serif;
+        }
+
+        /* Royal Frame */
+        .royal-frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            border: 8px solid var(--gold);
+            outline: 2px solid var(--silver);
+            outline-offset: -5px;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .corner {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            fill: var(--gold);
+            z-index: 101;
+        }
+        .top-left { top: 5px; left: 5px; }
+        .top-right { top: 5px; right: 5px; transform: rotate(90deg); }
+        .bottom-left { bottom: 5px; left: 5px; transform: rotate(-90deg); }
+        .bottom-right { bottom: 5px; right: 5px; transform: rotate(180deg); }
+
+        /* HUD */
+        #hud {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            right: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        .hud-item {
+            color: var(--gold);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .hud-label {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .hud-value {
+            font-size: 2.5rem;
+            font-weight: 600;
+            display: block;
+        }
+
+        .lives-container {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .heart-icon {
+            width: 24px;
+            height: 24px;
+            fill: var(--gold);
+            filter: drop-shadow(0 0 5px var(--gold));
+        }
+
+        /* Overlays */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(1, 1, 1, 0.75);
+            backdrop-filter: blur(12px);
+            z-index: 200;
+            color: var(--white);
+            text-align: center;
+            padding: 20px;
+            transition: opacity 0.5s ease;
+            border: 10px solid var(--gold);
+            border-radius: 20px;
+        }
+
+        .hidden { display: none !important; opacity: 0; pointer-events: none; }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            color: var(--gold);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        p { font-size: 1.2rem; margin-bottom: 2rem; max-width: 800px; }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            background: transparent;
+            color: var(--silver);
+            border: 2px solid var(--silver);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: var(--silver);
+            color: var(--purple);
+            box-shadow: 0 0 20px var(--purple);
+            transform: translateY(-2px);
+        }
+
+        .btn-gold {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-gold:hover {
+            background: var(--gold);
+            color: var(--black);
+            box-shadow: 0 0 20px var(--gold);
+        }
+
+        #multiplier-flash {
+            position: fixed;
+            inset: 0;
+            background: var(--gold);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #gameCanvas { display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="royal-frame">
+        <svg class="corner top-left" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L10 10 L10 100 L0 100 Z"/></svg>
+        <svg class="corner top-right" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L10 10 L10 100 L0 100 Z"/></svg>
+        <svg class="corner bottom-left" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L10 10 L10 100 L0 100 Z"/></svg>
+        <svg class="corner bottom-right" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L10 10 L10 100 L0 100 Z"/></svg>
+    </div>
+
+    <div id="hud">
+        <div class="hud-item">
+            <span class="hud-label">Score</span>
+            <span id="score-val" class="hud-value">0</span>
+            <span id="multiplier-tag" style="color: var(--gold); font-weight: bold; display: none; font-size: 1.2rem;">ROYAL FRENZY X2</span>
+        </div>
+        <div class="hud-item" style="text-align: right;">
+            <span class="hud-label">Treasury Health</span>
+            <div id="lives-display" class="lives-container"></div>
+        </div>
+    </div>
+
+    <div id="start-overlay" class="overlay">
+        <h1>Royal Bounty</h1>
+        <p>Command the Golden Chalice to secure the Queen's Hearts.<br>Beware the Shadow, for it drains the royal spirit.</p>
+        <h3>Rules for Royal Play:</h3>
+        <p>Silver Heart (Common Metal) :  +10 Points : Critical - Missing this heart costs 1 life. <br>
+        Gold Heart (Glowing Gold)   :  +50 Points : Rare - Falls faster than other hearts. <br>
+        Emerald Heart (Deep Green)  :  +5  Points : Bounty - Restores +1 Life, Max 5. <br>
+        Shadow heart (Dark Aura)    :  -20 Points : Curse - Catching this costs 1 life. <br> 
+        After every 500 Points, The Royal Frenzy (Multiplier) Triggers: A 2x multiplier is activted for 5 Secs. <br>
+        Every Golden hearts become worth 100 Points. <br> 
+        The velocity of falling hearts increases Linearly. </p>
+        <button class="btn btn-gold" onclick="game.start()">Begin the Royal Trial</button>
+    </div>
+
+    <div id="game-over-overlay" class="overlay hidden">
+        <h1 id="end-title">The Treasury Has Spoken</h1>
+        <p>Your service has concluded with a score of:<br><span id="final-score" style="color: var(--gold); font-size: 3rem;">0</span></p>
+        
+        <div class="button-group">
+            <button class="btn btn-gold" onclick="game.start()">Play Again</button>
+            <a href="page13.html" class="btn">Enter The Royal Wish Wall🖤💜</a>
+        </div>
+    </div>
+
+    <div id="multiplier-flash"></div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreVal = document.getElementById('score-val');
+        const livesDisplay = document.getElementById('lives-display');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const multiplierTag = document.getElementById('multiplier-tag');
+
+        const CONFIG = {
+            baseWidth: 1920,
+            baseHeight: 1080,
+            heartTypes: {
+                SILVER: { color: '#C0C0C0', points: 10, weight: 0.7 },
+                GOLD: { color: '#D4AF37', points: 50, weight: 0.15, glow: true },
+                EMERALD: { color: '#046307', points: 5, weight: 0.05, life: 1 },
+                SHADOW: { color: '#1a1a1a', points: -20, weight: 0.1, penalty: true } 
+            }
+        };
+
+        class Heart {
+            constructor(canvasWidth, scale) {
+                this.scale = scale;
+                const types = Object.keys(CONFIG.heartTypes);
+                const rand = Math.random();
+                let cumulativeWeight = 0;
+                
+                for (let type of types) {
+                    cumulativeWeight += CONFIG.heartTypes[type].weight;
+                    if (rand < cumulativeWeight) {
+                        this.type = type;
+                        this.config = CONFIG.heartTypes[type];
+                        break;
+                    }
+                }
+
+                this.radius = 25 * scale;
+                this.x = Math.random() * (canvasWidth - this.radius * 2) + this.radius;
+                this.y = -this.radius * 2;
+                this.speed = (Math.random() * 3 + 2 + (this.type === 'GOLD' ? 2 : 0)) * scale;
+                this.rotation = Math.random() * Math.PI * 2;
+            }
+
+            update(gravity) {
+                this.y += this.speed * gravity;
+                this.rotation += 0.01;
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(Math.sin(this.rotation) * 0.1);
+                
+                if (this.config.glow) {
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = this.config.color;
+                }
+
+                ctx.fillStyle = this.config.color;
+                const s = this.radius / 10;
+                ctx.beginPath();
+                ctx.moveTo(0, s * 3);
+                ctx.bezierCurveTo(0, s * 3, -s * 5, -s * 5, -s * 10, s * 3);
+                ctx.bezierCurveTo(-s * 15, s * 11, 0, s * 20, 0, s * 25);
+                ctx.bezierCurveTo(0, s * 20, s * 15, s * 11, s * 10, s * 3);
+                ctx.bezierCurveTo(s * 5, -s * 5, 0, s * 3, 0, s * 3);
+                ctx.fill();
+                
+                if (this.type === 'SHADOW') {
+                    ctx.strokeStyle = '#D4AF37';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color, scale) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = Math.random() * 4 * scale;
+                this.vx = (Math.random() - 0.5) * 12 * scale;
+                this.vy = (Math.random() - 0.5) * 12 * scale;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.03 + 0.02;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.alpha);
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class Player {
+            constructor() {
+                this.width = 160;
+                this.height = 60;
+                this.x = window.innerWidth / 2;
+                this.y = window.innerHeight * 0.88;
+            }
+
+            draw(ctx, scale) {
+                const w = this.width * scale;
+                const h = this.height * scale;
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                let grad = ctx.createLinearGradient(-w/2, 0, w/2, 0);
+                grad.addColorStop(0, '#8A6E2F');
+                grad.addColorStop(0.5, '#D4AF37');
+                grad.addColorStop(1, '#8A6E2F');
+                ctx.fillStyle = grad;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = 'rgba(0,0,0,0.6)';
+                ctx.beginPath();
+                ctx.moveTo(-w/2, 0);
+                ctx.bezierCurveTo(-w/2, h, w/2, h, w/2, 0);
+                ctx.lineTo(w/2 + 15*scale, -8*scale);
+                ctx.lineTo(-w/2 - 15*scale, -8*scale);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = '#F9E4B7';
+                ctx.lineWidth = 2 * scale;
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        const game = {
+            score: 0,
+            lives: 3,
+            hearts: [],
+            particles: [],
+            active: false,
+            scale: 1,
+            gravity: 1,
+            multiplier: 1,
+            lastSpawn: 0,
+            spawnRate: 1000,
+
+            init() {
+                this.resize();
+                this.player = new Player();
+                window.addEventListener('resize', () => this.resize());
+                const handleInput = (e) => {
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    this.player.x = Math.max(80 * this.scale, Math.min(window.innerWidth - 80 * this.scale, clientX));
+                };
+                window.addEventListener('mousemove', handleInput);
+                window.addEventListener('touchmove', handleInput, { passive: false });
+            },
+
+            resize() {
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = window.innerWidth * dpr;
+                canvas.height = window.innerHeight * dpr;
+                ctx.scale(dpr, dpr);
+                canvas.style.width = window.innerWidth + 'px';
+                canvas.style.height = window.innerHeight + 'px';
+                this.scale = Math.max(0.5, window.innerWidth / CONFIG.baseWidth);
+                if(this.player) this.player.y = window.innerHeight * 0.88;
+            },
+
+            start() {
+                this.score = 0;
+                this.lives = 3;
+                this.hearts = [];
+                this.particles = [];
+                this.gravity = 1;
+                this.multiplier = 1;
+                this.active = true;
+                this.updateHUD();
+                document.querySelectorAll('.overlay').forEach(el => el.classList.add('hidden'));
+                requestAnimationFrame((t) => this.loop(t));
+            },
+
+            updateHUD() {
+                scoreVal.innerText = this.score;
+                livesDisplay.innerHTML = '';
+                for(let i=0; i<this.lives; i++) {
+                    livesDisplay.innerHTML += `<svg class="heart-icon" viewBox="0 0 32 32"><path d="M16 28s-12-7-12-15 5-8 12-2 12 2 12 15-12 15-12 15z"/></svg>`;
+                }
+            },
+
+            spawnParticle(x, y, color) {
+                for(let i=0; i<15; i++) {
+                    this.particles.push(new Particle(x, y, color, this.scale));
+                }
+            },
+
+            triggerCelebration() {
+                this.multiplier = 2;
+                multiplierTag.style.display = 'block';
+                const flash = document.getElementById('multiplier-flash');
+                flash.style.transition = 'opacity 0.2s';
+                flash.style.opacity = '0.3';
+                setTimeout(() => {
+                    flash.style.opacity = '0';
+                    setTimeout(() => {
+                        this.multiplier = 1;
+                        multiplierTag.style.display = 'none';
+                    }, 5000);
+                }, 200);
+            },
+
+            gameOver() {
+                this.active = false;
+                finalScoreDisplay.innerText = this.score;
+                document.getElementById('game-over-overlay').classList.remove('hidden');
+            },
+
+            loop(timestamp) {
+                if (!this.active) return;
+
+                if (timestamp - this.lastSpawn > this.spawnRate / this.gravity) {
+                    this.hearts.push(new Heart(window.innerWidth, this.scale));
+                    this.lastSpawn = timestamp;
+                }
+
+                this.gravity = 1 + (this.score / 1200);
+
+                this.hearts.forEach((h, index) => {
+                    h.update(this.gravity);
+                    const p = this.player;
+                    const pW = p.width * this.scale;
+                    
+                    if (h.y + h.radius > p.y && h.y < p.y + 25 && Math.abs(h.x - p.x) < pW/1.8) {
+                        if (h.config.penalty) {
+                            this.lives--; // Shadow heart now penalizes life for higher tension
+                            this.score = Math.max(0, this.score + h.config.points);
+                        } else {
+                            const prevScore = this.score;
+                            this.score += h.config.points * this.multiplier;
+                            if (h.config.life) this.lives = Math.min(5, this.lives + h.config.life);
+                            if (Math.floor(this.score / 500) > Math.floor(prevScore / 500)) this.triggerCelebration();
+                        }
+                        this.spawnParticle(h.x, h.y, h.config.color);
+                        this.hearts.splice(index, 1);
+                        this.updateHUD();
+                        if (this.lives <= 0) this.gameOver();
+                    }
+
+                    if (h.y > window.innerHeight + 50) {
+                        if (!h.config.penalty && h.type !== 'GOLD') {
+                            this.lives--;
+                            this.updateHUD();
+                            if (this.lives <= 0) this.gameOver();
+                        }
+                        this.hearts.splice(index, 1);
+                    }
+                });
+
+                this.particles.forEach((p, i) => {
+                    p.update();
+                    if (p.alpha <= 0) this.particles.splice(i, 1);
+                });
+
+                ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+                let bg = ctx.createLinearGradient(0, 0, 0, window.innerHeight);
+                bg.addColorStop(0, '#2e004d');
+                bg.addColorStop(1, '#010101');
+                ctx.fillStyle = bg;
+                ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+                this.player.draw(ctx, this.scale);
+                this.hearts.forEach(h => h.draw(ctx));
+                this.particles.forEach(p => p.draw(ctx));
+
+                requestAnimationFrame((t) => this.loop(t));
+            }
+        };
+
+        game.init();
+    </script>
+</body>
+</html>

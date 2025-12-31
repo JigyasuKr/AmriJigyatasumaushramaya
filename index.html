@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Royal Kingdom</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+     
+    <section class="hero">
+        <div class="overlay"></div>
+        <div class="content">
+            <h2 class="subtitle">Welcome to the Royal Kingdom of</h2>
+            <h1 class="main-title">Amrita & Jigyasu</h1>
+            <p class="announcement">Our New Year Journey Begins In:</p>
+            
+            <div id="countdown">
+                <div class="time-box">
+                    <span id="days">00</span>
+                    <label>Days</label>
+                </div>
+                <div class="time-box">
+                    <span id="hours">00</span>
+                    <label>Hours</label>
+                </div>
+                <div class="time-box">
+                    <span id="minutes">00</span>
+                    <label>Minutes</label>
+                </div>
+                <div class="time-box">
+                    <span id="seconds">00</span>
+                    <label>Seconds</label>
+                </div>
+            </div>
+
+            <button class="royal-btn" onclick="openModal()" style="font-family: 'Garamond', serif;">Enter the Palace</button>
+        </div>
+    </section>
+    <audio id="index-audio" loop>
+            <source src="https://res.cloudinary.com/dsitvhpg2/video/upload/v1767218163/index_page_mpjvm4.mp3" type="audio/mpeg">
+       </audio>
+    <div id="rose-container"></div>
+    <div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <h3>Royal Access Required</h3>
+        <p>Enter the secret key to proceed:</p>
+        <input type="password" id="passwordInput" placeholder="Secret Key...">
+        <div class="modal-buttons">
+            <button onclick="closeModal()" class="cancel-btn">Return</button>
+            <button onclick="validatePassword()" class="royal-btn">Enter</button>
+        </div>
+    </div>
+</div>
+    <script src="script.js">
+    </script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Royal Cinema</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@0,500;1,500&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000 url('https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217907/cinemall_g46odw.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Playfair Display', serif;
+            color: white;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Royal Header */
+        header { text-align: center; margin: 20px 0; z-index: 5; }
+        .shiny-gold {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3.5rem;
+            margin: 0;
+            background: linear-gradient(to bottom, #cf9911 0%, #fefeb2 45%, #e1aa29 50%, #fefeb2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+        }
+
+        .glossy-silver {
+            font-size: 1.2rem;
+            color: #e2e2e2;
+            text-shadow: 0 0 15px rgba(255,255,255,0.4);
+        }
+
+        /* The Screen Podium */
+        .podium {
+            position: relative;
+            width: 55vw;
+            height: 50vh;
+            border: 2px solid #d4af37; 
+            outline: 12px solid #c0c0c0;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+            background: #000;
+            z-index: 2;
+        }
+
+        #mainVideo { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Velvet Curtains */
+        .curtain-wrapper {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .curtain {
+            width: 50%;
+            height: 100%;
+            background: radial-gradient(circle at center, #8b0000 0%, #4a0000 100%);
+            transition: transform 2.5s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+        }
+
+        .curtain-wrapper.open .left { transform: translateX(-100%); }
+        .curtain-wrapper.open .right { transform: translateX(100%); }
+
+        /* Start UI */
+        #startUI {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .royal-btn {
+            background: linear-gradient(to bottom, #d4af37, #f9f295, #b8860b);
+            border: 2px solid #8a6d3b;
+            padding: 12px 24px;
+            font-family: 'Cinzel Decorative', cursive;
+            font-weight: bold;
+            color: #331d00;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        /* Controls (Hidden by Default) */
+        #controls-ui {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 12;
+            display: none; /* Controlled by JS */
+            gap: 15px;
+        }
+
+        .ctrl-btn {
+            background: rgba(0, 0, 0, 0.6);
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-family: 'Cinzel Decorative';
+            font-size: 0.8rem;
+        }
+
+        /* Mirror Description */
+        #mirror-desc {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            background: rgba(212, 175, 55, 0.9);
+            border: 4px solid #fff;
+            padding: 20px;
+            display: none;
+            z-index: 15;
+            text-align: center;
+            color: #000;
+        }
+        
+        #mirror-para {
+    color: #e2e2e2;
+    background: linear-gradient(90deg, #999, #fff, #999);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
+    font-size: 1.3rem;
+    line-height: 1.6;
+    background-clip: text;
+}
+
+@keyframes shine {
+    to { background-position: 200% center; }
+}
+
+
+        .stall { position: fixed; top: 50%; width: 70px; cursor: pointer; z-index: 5; }
+        .left-side { left: 5%; }
+        .right-side { right: 5%; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 class="shiny-gold">The Cinema</h1>
+        <p class="glossy-silver">An exclusive show for Her Majesty, Queen Amrita. <br> -King Jigyasu</p>
+    </header>
+
+    <div class="podium">
+        <video id="mainVideo" src="https://res.cloudinary.com/dsitvhpg2/video/upload/v1767222453/video_lxfg08.mp4"></video>
+
+        <div class="curtain-wrapper" id="curtainWrapper">
+            <div class="curtain left"></div>
+            <div class="curtain right"></div>
+
+            <div id="startUI">
+                <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217933/rose_p9ujiv.png" style="width: 60px; margin-bottom: 15px;" alt="Rose">
+                <button class="royal-btn" onclick="startTheShow()">Permission to Start the Show, Your Majesty</button>
+            </div>
+        </div>
+
+        <div id="mirror-desc">
+            <h2 id="mirror-title" style="margin: 0; font-family: 'Cinzel Decorative'"></h2>
+            <p id="mirror-para" style="font-weight: bold;"></p>
+        </div>
+
+        <div id="controls-ui">
+            <button class="ctrl-btn" onclick="skip(-10)">Rewind⏪</button>
+            <button class="ctrl-btn" onclick="playPause()">⏯️Play/Pause</button>
+            <button class="ctrl-btn" onclick="skip(10)">⏩Forward</button>
+        </div>
+    </div>
+
+    <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217942/popcorn_fowdvw.png" class="stall left-side" onmouseover="showDesc('Popcorn', 'Golden kernels for the Queen. Heart pops under your beauty in Royal Kingdom')" onmouseout="hideDesc()">
+    <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217910/drink_ethzb7.png" class="stall right-side" style="top:45%" onmouseover="showDesc('Soda', 'Chilled sparkling elixir. The fresehners like our Queen breathe.')" onmouseout="hideDesc()">
+
+    <div id="proceedLink" style="display:none; margin-top: 30px;">
+        <button class="royal-btn" onclick="location.href='page10.html'">The Royal Letter</button>
+    </div>
+
+    <script>
+        const video = document.getElementById('mainVideo');
+        const wrapper = document.getElementById('curtainWrapper');
+        const startUI = document.getElementById('startUI');
+        const controls = document.getElementById('controls-ui');
+        const mirror = document.getElementById('mirror-desc');
+        const introMusic = document.getElementById('introMusic');
+
+        function startTheShow() {
+            startUI.style.display = 'none';
+            wrapper.classList.add('open');
+
+            showDesc("Welcome, My Queen", "The show is about to commence.");
+
+            setTimeout(() => {
+                hideDesc();
+                video.play();
+                controls.style.display = 'flex'; // Show buttons only when video starts
+            }, 4000);
+        }
+
+        video.onended = function() {
+            wrapper.classList.remove('open'); // Close Curtains
+            controls.style.display = 'none';  // REMOVE BUTTONS IMMEDIATELY
+            
+    showDesc("The End", "The performance has concluded, My Queen. I hope the spectacle was to your satisfaction. Your carriage awaits for the next chapter of our journey. Wishing us the Cinematic experience for the Lifetime ahead." );
+         document.getElementById('proceedLink').style.display = 'block';
+            introMusic.play();
+        };
+
+        function showDesc(title, text) {
+            mirror.style.display = 'block';
+            document.getElementById('mirror-title').innerText = title;
+            document.getElementById('mirror-para').innerText = text;
+        }
+
+        function hideDesc() { mirror.style.display = 'none'; }
+
+        function playPause() { if (video.paused) video.play(); else video.pause(); }
+        function skip(seconds) { video.currentTime += seconds; }
+    </script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grand Finale – New Year 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lora:ital@1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #046307;
+            --gold: #D4AF37;
+            --silver: #C0C0C0;
+            --plum: #2D004F;
+            --obsidian: #0A0A0A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--obsidian);
+            overflow: hidden;
+            font-family: 'Cinzel', serif;
+            height: 100vh;
+            cursor: crosshair;
+        }
+
+        /* --- Layered Architecture --- */
+        
+        /* Imperial Frame */
+        .imperial-frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 12px solid var(--gold);
+            outline: 3px solid var(--silver);
+            outline-offset: -8px;
+            z-index: 10;
+            pointer-events: none;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .corner {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            fill: var(--gold);
+        }
+        .tl { top: 0; left: 0; }
+        .tr { top: 0; right: 0; transform: rotate(90deg); }
+        .bl { bottom: 0; left: 0; transform: rotate(-90deg); }
+        .br { bottom: 0; right: 0; transform: rotate(180deg); }
+
+        /* Stars Background (Layer 1) */
+        #star-field {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, var(--plum) 0%, var(--obsidian) 100%);
+            z-index: 1;
+        }
+
+        /* Canvas (Layer 2) */
+        #fireworksCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        /* Portrait & Typography (Layers 3 & 4) */
+        .content-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 4;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        .portrait-frame {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+            border-radius: 50%;
+            border: 10px solid var(--gold);
+            overflow: hidden;
+            z-index: 3;
+            box-shadow: 0 0 40px var(--gold);
+            animation: pulse 4s infinite ease-in-out;
+            pointer-events: auto;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 40px var(--gold); }
+            50% { transform: scale(1.03); box-shadow: 0 0 60px var(--gold); }
+        }
+
+        .portrait-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        h1 {
+            color: var(--gold);
+            font-size: 4rem;
+            font-weight: 900;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8), 2px 2px 4px rgba(212, 175, 55, 0.5);
+            margin-bottom: 10px;
+            letter-spacing: 0.1em;
+        }
+
+        p {
+            font-family: 'Lora', serif;
+            font-style: italic;
+            color: var(--silver);
+            font-size: 2rem;
+            text-shadow: 0 0 8px rgba(255,255,255,0.4);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            p { font-size: 1.4rem; }
+            .portrait-frame { width: 220px; height: 220px; }
+            .imperial-frame { border-width: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="imperial-frame">
+        <svg class="corner tl" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L30 10 C20 10 10 20 10 30 L10 100 L0 100 Z"/></svg>
+        <svg class="corner tr" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L30 10 C20 10 10 20 10 30 L10 100 L0 100 Z"/></svg>
+        <svg class="corner bl" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L30 10 C20 10 10 20 10 30 L10 100 L0 100 Z"/></svg>
+        <svg class="corner br" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 10 L30 10 C20 10 10 20 10 30 L10 100 L0 100 Z"/></svg>
+    </div>
+
+    <div id="star-field"></div>
+    <canvas id="fireworksCanvas"></canvas>
+
+    <div class="content-overlay">
+        <h1>HAPPY NEW YEAR 2026 MY QUEEN</h1>
+        <div class="portrait-frame">
+            <img src="https://res.cloudinary.com/dsitvhpg2/image/upload/v1767217911/couple_l4dzz7.png" alt="Our Love" onerror="this.src='https://via.placeholder.com/500x500?text=2026+Love'">
+        </div>
+        <p>I Love You, Mrs. Maurya🖤💜🫂😘</p>
+    </div>
+    <audio id="final-audio" loop>
+    <source src="https://res.cloudinary.com/dsitvhpg2/video/upload/v1767218137/banquet_theme_bx7nhg.mp3" type="audio/mpeg">
+</audio>
+
+    <script>
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+        let rockets = [];
+        const colors = ['#046307', '#D4AF37', '#C0C0C0', '#FFFFFF', '#FFD700'];
+        
+        // Settings
+        const FINALE_SECONDS = 5;
+        let isFinaleTriggered = false;
+        let particleLimit = window.innerWidth < 768 ? 60 : 120;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor(x, y, color, velocity, life = 1.0) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.velocity = velocity;
+                this.life = life;
+                this.opacity = 1;
+                this.friction = 0.96;
+                this.gravity = 0.12;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.fill();
+                
+                // Trail
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = this.color;
+            }
+
+            update() {
+                this.velocity.x *= this.friction;
+                this.velocity.y *= this.friction;
+                this.velocity.y += this.gravity;
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.opacity -= 0.012;
+            }
+        }
+
+        class Rocket {
+            constructor(x, targetY, color, isImperial = false) {
+                this.x = x;
+                this.y = height;
+                this.targetY = targetY;
+                this.color = color;
+                this.velocity = { x: (Math.random() - 0.5) * 2, y: -9 };
+                this.isImperial = isImperial;
+                this.exploded = false;
+            }
+
+            update() {
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                if (this.y <= this.targetY) {
+                    this.explode();
+                    this.exploded = true;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = this.isImperial ? '#D4AF37' : 'white';
+                ctx.fill();
+            }
+
+            explode() {
+                const count = this.isImperial ? 200 : particleLimit;
+                for (let i = 0; i < count; i++) {
+                    const angle = (Math.PI * 2 / count) * i;
+                    const speed = Math.random() * 5 + 2;
+                    particles.push(new Particle(
+                        this.x, this.y, 
+                        this.color, 
+                        { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed }
+                    ));
+                }
+            }
+        }
+
+        function createHeart(centerX, centerY) {
+            const count = 100;
+            for (let i = 0; i < count; i++) {
+                const t = (i / count) * Math.PI * 2;
+                // Parametric heart formula
+                const x = 16 * Math.pow(Math.sin(t), 3);
+                const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                particles.push(new Particle(
+                    centerX, centerY,
+                    '#D4AF37',
+                    { x: x * 0.5, y: y * 0.5 },
+                    2.0
+                ));
+            }
+        }
+
+        function launchRocket() {
+            const x = Math.random() * width;
+            const targetY = Math.random() * (height * 0.5);
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            rockets.push(new Rocket(x, targetY, color));
+        }
+
+        // Loop
+        function animate() {
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.15)';
+            ctx.fillRect(0, 0, width, height);
+            ctx.shadowBlur = 0;
+
+            rockets.forEach((rocket, i) => {
+                rocket.update();
+                rocket.draw();
+                if (rocket.exploded) rockets.splice(i, 1);
+            });
+
+            particles.forEach((particle, i) => {
+                particle.update();
+                particle.draw();
+                if (particle.opacity <= 0) particles.splice(i, 1);
+            });
+
+            if (!isFinaleTriggered && Math.random() < 0.05) launchRocket();
+
+            requestAnimationFrame(animate);
+        }
+
+        // Click Handler
+        window.addEventListener('mousedown', (e) => {
+            rockets.push(new Rocket(e.clientX, e.clientY, '#D4AF37', true));
+        });
+
+        // Sequence Timer
+        setTimeout(() => {
+            isFinaleTriggered = true;
+            // Grand Finale Trigger
+            for(let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    createHeart(Math.random() * width, Math.random() * height * 0.6);
+                }, i * 400);
+            }
+            // Screen Flash
+            document.body.style.backgroundColor = 'var(--gold)';
+            setTimeout(() => { document.body.style.backgroundColor = 'var(--obsidian)'; }, 100);
+        }, FINALE_SECONDS * 1000);
+
+        animate();
+        window.addEventListener('click', () => {
+        const audio = document.getElementById('final-audio');
+        audio.play();
+    }, { once: true });
+    </script>
+</body>
+</html>

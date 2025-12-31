@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Sovereign's Soundscape v3.3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,900;1,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #046307;
+            --gold: #D4AF37;
+            --silver: #C0C0C0;
+            --plum: #2D004F;
+            --obsidian: #0A0A0A;
+            --glass: rgba(10, 10, 10, 0.92);
+            --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: radial-gradient(circle at center, var(--plum) 0%, var(--obsidian) 100%);
+            color: var(--silver);
+            font-family: 'Cinzel', serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        /* --- NEW: Instruction Overlay --- */
+        #instruction-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--obsidian);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+
+        .instruction-box {
+            background: var(--glass);
+            border: 2px solid var(--gold);
+            padding: 40px;
+            max-width: 550px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
+            backdrop-filter: blur(20px);
+        }
+
+        .instruction-box h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .instruction-box ul {
+            text-align: left;
+            margin: 20px 0;
+            list-style: none;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .instruction-box li::before {
+            content: "✦ ";
+            color: var(--gold);
+        }
+
+        /* --- Royal Viewport Frame --- */
+        .royal-frame {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border: 8px solid var(--gold);
+            outline: 2px solid var(--silver);
+            outline-offset: -10px;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .corner-flourish { position: absolute; width: 70px; height: 70px; fill: var(--gold); }
+        .top-left { top: 15px; left: 15px; }
+        .top-right { top: 15px; right: 15px; transform: rotate(90deg); }
+        .bottom-left { bottom: 15px; left: 15px; transform: rotate(-90deg); }
+        .bottom-right { bottom: 15px; right: 15px; transform: rotate(180deg); }
+
+        /* --- Player Deck --- */
+        .player-deck {
+            position: relative;
+            width: 95vw;
+            max-width: 720px;
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 20px 40px;
+            border-radius: 20px;
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            grid-template-areas: 
+                "top top"
+                "disc meta"
+                "disc controls"
+                "bottom bottom";
+            align-items: center;
+            gap: 20px;
+            z-index: 10;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.9);
+        }
+
+        /* --- Playlist Overlay (Disc Hover Only) --- */
+        .playlist-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(15px);
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 50%;
+            border: 1px solid var(--gold);
+        }
+
+        #visualizer-container:hover .playlist-overlay {
+            opacity: 1;
+            pointer-events: all;
+            border-radius: 15px;
+            width: 280px;
+            height: 320px;
+            top: -40px;
+            left: -20px;
+        }
+
+        .ledger-title {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            font-size: 1.1rem;
+            font-style: italic;
+            border-bottom: 1px solid var(--gold);
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            text-align: center;
+        }
+
+        .playlist-list {
+            list-style: none;
+            text-align: left;
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-right: 5px;
+        }
+
+        .playlist-list::-webkit-scrollbar { width: 4px; }
+        .playlist-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        .playlist-list::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+        .playlist-item {
+            padding: 8px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .playlist-item:hover { background: rgba(212, 175, 55, 0.1); color: var(--gold); }
+        .playlist-item.active { color: var(--gold); border-left: 2px solid var(--gold); padding-left: 12px; }
+
+        /* --- Layout Elements --- */
+        .flourish-row { grid-area: top; height: 35px; fill: var(--gold); text-align: center; }
+        .flourish-row.bottom { grid-area: bottom; transform: scaleY(-1); }
+
+        #visualizer-container { grid-area: disc; width: 240px; height: 240px; position: relative; }
+        canvas#vinyl-canvas { border-radius: 50%; width: 100%; height: 100%; }
+
+        .metadata { 
+            grid-area: meta; 
+            text-align: left; 
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding-bottom: 15px;
+        }
+
+        .song-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            font-style: italic;
+            color: var(--gold);
+            line-height: 1.2;
+        }
+
+        .artist-name {
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--silver);
+            margin-top: 5px;
+        }
+
+        .controls-wrapper { grid-area: controls; display: flex; flex-direction: column; gap: 18px; }
+        .main-controls { display: flex; gap: 15px; align-items: center; }
+        .control-btn { background: none; border: none; cursor: pointer; fill: var(--gold); transition: var(--transition); }
+        .control-btn:hover { filter: drop-shadow(0 0 10px #9D00FF); transform: scale(1.15); }
+        
+        .play-pause-circle {
+            width: 50px; height: 50px; border: 2px solid var(--gold);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+
+        input[type=range] { -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; width: 100%; }
+        input[type=range]::-webkit-slider-runnable-track { height: 2px; background: rgba(192, 192, 192, 0.2); }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 14px; width: 14px; background: var(--gold);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); margin-top: -6px;
+        }
+
+        .time-display { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--gold); margin-top: 6px; }
+
+        .royal-btn {
+            background: linear-gradient(135deg, #8a6d3b, var(--gold), #f9e297, var(--gold), #8a6d3b);
+            background-size: 200% auto;
+            color: var(--obsidian);
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            padding: 16px 40px;
+            border: 1px solid var(--silver);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            transition: var(--transition);
+            animation: shimmer 5s infinite linear;
+            text-decoration: none;
+            z-index: 20;
+        }
+        .royal-btn:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4); }
+
+        @keyframes shimmer { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+
+        .royal-toggle { position: absolute; top: 15px; right: 20px; display: flex; align-items: center; gap: 8px; font-size: 0.6rem; cursor: pointer; color: var(--gold); }
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+
+        @media (max-width: 650px) {
+            body { justify-content: flex-start; padding-top: 50px; overflow-y: auto; }
+            .player-deck { grid-template-columns: 1fr; grid-template-areas: "top" "meta" "disc" "controls" "bottom"; padding: 20px; }
+            #visualizer-container { margin: 20px auto; width: 220px; height: 220px; }
+            #visualizer-container:hover .playlist-overlay { width: 100%; height: 100%; top: 0; left: 0; border-radius: 50%; }
+            .metadata { text-align: center; }
+            .main-controls { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="instruction-overlay">
+        <div class="instruction-box">
+            <h2>The Royal Decrees</h2>
+            <ul>
+                <li>Press <b>Play</b> to hear the melodies.</li>
+                <li>Use <b>forward</b> and <b>rewind</b> to move songs.</li>
+                <li>Hover over the <b>Rotating Disc</b> to view all songs.</li>
+                <li>Select songs to play, hovering over the <b>Rotating Disc</b>.</li>
+                <li>Toggle <b>Royal Mode</b> for a golden starfall.</li>
+                <li>Use <b>Proceed</b> below to continue your journey.</li>
+            </ul>
+            <button class="royal-btn" onclick="closeInstructions()">Enter the Kingdom</button>
+        </div>
+    </div>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="royal-frame">
+        <svg class="corner-flourish top-left" viewBox="0 0 100 100"><path d="M0,0 C50,0 100,50 100,100 L95,100 C95,55 45,5 0,5 Z"/></svg>
+        <svg class="corner-flourish top-right" viewBox="0 0 100 100"><path d="M0,0 C50,0 100,50 100,100 L95,100 C95,55 45,5 0,5 Z"/></svg>
+        <svg class="corner-flourish bottom-left" viewBox="0 0 100 100"><path d="M0,0 C50,0 100,50 100,100 L95,100 C95,55 45,5 0,5 Z"/></svg>
+        <svg class="corner-flourish bottom-right" viewBox="0 0 100 100"><path d="M0,0 C50,0 100,50 100,100 L95,100 C95,55 45,5 0,5 Z"/></svg>
+    </div>
+
+    <main class="player-deck">
+        <div class="royal-toggle" id="mode-toggle">
+            <span>ROYAL MODE</span>
+            <svg width="30" height="15"><rect width="30" height="15" rx="7.5" fill="#2D004F"/><circle id="toggle-circle" cx="7.5" cy="7.5" r="5" fill="#D4AF37" style="transition:0.3s"/></svg>
+        </div>
+
+        <svg class="flourish-row" viewBox="0 0 400 60"><path d="M200,50 Q150,50 100,20 T0,20 M200,50 Q250,50 300,20 T400,20" fill="none" stroke="#D4AF37" stroke-width="2"/></svg>
+
+        <div id="visualizer-container">
+            <canvas id="vinyl-canvas" width="400" height="400"></canvas>
+            <div class="playlist-overlay">
+                <div class="ledger-title">Upcoming Melodies</div>
+                <ul class="playlist-list" id="royal-ledger"></ul>
+            </div>
+        </div>
+
+        <div class="metadata">
+            <h1 class="song-title" id="track-title">The Royal Kingdom of Amrita & Jigyasu</h1>
+            <p class="artist-name" id="track-artist">The Royal Orchestra</p>
+        </div>
+
+        <div class="controls-wrapper">
+            <div class="progress-container">
+                <input type="range" id="progress-bar" value="0" min="0" max="100">
+                <div class="time-display"><span id="current-time">0:00</span><span id="duration">0:00</span></div>
+            </div>
+            
+            <div class="main-controls">
+                <button class="control-btn" id="prev"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+                <button class="control-btn play-pause-circle" id="play-pause"><svg id="play-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+                <button class="control-btn" id="next"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6zm9-12v12h2V6z"/></svg></button>
+                
+                <div style="display: flex; align-items: center; gap: 8px; margin-left: 10px;">
+                    <svg width="14" height="14" fill="var(--silver)" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                    <input type="range" id="volume-slider" value="80" min="0" max="100" style="width: 70px;">
+                </div>
+            </div>
+        </div>
+
+        <svg class="flourish-row bottom" viewBox="0 0 400 60"><path d="M200,50 Q150,50 100,20 T0,20 M200,50 Q250,50 300,20 T400,20" fill="none" stroke="#D4AF37" stroke-width="2"/></svg>
+    </main>
+
+    <a href="page17.html" class="royal-btn">
+       ENTER THE ROYAL VIRTUAL CREST
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+    </a>
+
+    <audio id="royalPlayer" crossorigin="anonymous"></audio>
+
+    <script>
+        const playlist = [
+            { title: "Love Song", artist: "Taylor Swift", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767222974/love_song_v5hkyz.mp3" },
+            { title: "The Ophelia", artist: "Taylor Swift", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767223130/ophelia_pnks1j.mp3" },
+            { title: "Bad Blood", artist: "Taylor Swift", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767222739/bad_blood_ufwzgh.mp3" },
+            { title: "O Sweetie Sweetie", artist: "Amit Trivedi, Raj Shekhar", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767223045/o_sweetie_sweetie_yp4h5o.mp3"},
+            { title: "Sahiba", artist: "Aditya Rikhari", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767223210/sahiba_vpgyjy.mp3" },
+            { title: "Samjho Na", artist: "Aditya Rikhari", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767223182/samjho_na_lmd55a.mp3"},
+            { title: "Mann Mera", artist: "Gajendra Verma", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767223115/mann_mera_kb6k4d.mp3"},
+            { title: "Paaro", artist: "Aditya Rikhari", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767223129/paaro_ut1mbc.mp3" },
+            { title: "Maand X Bol Na", artist: "Krishnendu Hari", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767222906/maand_x_bol_na_imqycw.mp3" },
+            { title: "Kashish", artist: "Ashish Bhatia, Omkar Singh, Kashish Ratnani", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767222905/kashish_enmoys.mp3" },
+            { title: "Ye Tune Kya Kiya", artist: "Pritam, Javed Bashir", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767223205/ye_tune_kya_kiya_rrechp.mp3" },
+            { title: "Ishq", artist: "Faheem Abdullah, Rauhan Malik, Amir Ameer", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767222745/ishq_i0lnww.mp3" },
+            { title: "Ranjheya Ve", artist: "Zain Zohaib", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767223133/ranjheya_ve_hyecqd.mp3" },
+            { title: "Isq Risk", artist: "Sohail Sen, Rahat Fateh Ali Khan, Irshad Kamil", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767222796/isq_risk_kkycom.mp3" },
+            { title: "Zaroor", artist: "Aparshakti Khurana, Savi Kahlon", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767223195/zaroor_nzfkbi.mp3" },
+            { title: "Jugraafiya - From Super 30", artist: "Udit Narayan, Shreya Ghosal", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767222849/jugraafiya_ej79sk.mp3" },
+            { title: "Dil kaa Jo Haal Hai", artist: "Abhijeet Bhattacharya, Shreya Ghosal", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767222817/dil_kaa_jo_haal_hai_bmd1ac.mp3" },
+            { title: "Preet Re - From Dhadak 2", artist: "Darshan Raval, Rochak Kohli,Jonita Gandhi, Gurpreet Saini", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767223096/preet_re_wvpufk.mp3" },
+            { title: "Mahiye Jinna Sohna", artist: "Darshan Raval", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767223017/mahiye_jinna_sohna_hvoewj.mp3" },
+            { title: "Saiyaara", artist: "Tanishk Bagchi", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767223207/Saiyaara_duvguh.mp3"},
+            { title: "Jeene Laga Hoon", artist: "Atif Aslam, Shreya Ghosal", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767222927/jeene_laga_hoon_ujje4m.mp3"},
+            { title: "Dance Pe Chance", artist: "Sunidhi Chauhan, Labh Janjua", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767222746/dance_pe_chance_dbe00y.mp3"},
+            { title: "Aane Se Uske Aaye Bahar", artist: "Atif Aslam", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767222647/aane_se_uske_aaye_bahar_siw86h.mp3"},
+            { title: "Sanson Ki Mala Pe", artist: "Nusrat Fateh Ali Khan", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767223072/mala_fgxxrd.mp3"},
+            { title: "Finding Her", artist: "Kushagra, Bharath, Saaheal", src: "https://res.cloudinary.com/dsitvhpg2/video/upload/v1767222753/finding_her_mzjvqm.mp3" }
+        ];
+
+        let currentIdx = 0;
+        const audio = document.getElementById('royalPlayer');
+        const canvas = document.getElementById('vinyl-canvas');
+        const ctx = canvas.getContext('2d');
+        const playBtn = document.getElementById('play-pause');
+        const playIcon = document.getElementById('play-icon');
+        const progressBar = document.getElementById('progress-bar');
+        const volSlider = document.getElementById('volume-slider');
+        const ledgerContainer = document.getElementById('royal-ledger');
+        
+        let audioCtx, analyser, dataArray, rotation = 0, isRoyalMode = false;
+
+        // --- NEW: Instruction Logic ---
+        function closeInstructions() {
+            initAudio(); // Initialize audio context on first click
+            document.getElementById('instruction-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('instruction-overlay').style.display = 'none';
+            }, 800);
+        }
+
+        function updateLedger() {
+            ledgerContainer.innerHTML = ''; 
+            playlist.forEach((track, index) => {
+                const li = document.createElement('li');
+                li.className = `playlist-item ${index === currentIdx ? 'active' : ''}`;
+                li.innerHTML = `<span>${track.title}</span><span style="font-size:0.6rem; opacity:0.6;">${track.artist}</span>`;
+                li.onclick = (e) => {
+                    e.stopPropagation();
+                    currentIdx = index;
+                    loadTrack(currentIdx);
+                    audio.play();
+                    playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                };
+                ledgerContainer.appendChild(li);
+            });
+        }
+
+        function loadTrack(index) {
+            const track = playlist[index];
+            audio.src = track.src;
+            document.getElementById('track-title').innerText = track.title;
+            document.getElementById('track-artist').innerText = track.artist;
+            progressBar.value = 0;
+            updateLedger();
+        }
+        loadTrack(currentIdx);
+
+        function initAudio() {
+            if (audioCtx) return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            const source = audioCtx.createMediaElementSource(audio);
+            source.connect(analyser); analyser.connect(audioCtx.destination);
+            analyser.fftSize = 128; dataArray = new Uint8Array(analyser.frequencyBinCount);
+        }
+
+        playBtn.addEventListener('click', () => {
+            initAudio();
+            if (audio.paused) { 
+                audio.play(); 
+                playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+            } else { 
+                audio.pause(); 
+                playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            }
+        });
+
+        document.getElementById('next').addEventListener('click', () => {
+            currentIdx = (currentIdx + 1) % playlist.length;
+            loadTrack(currentIdx); audio.play();
+            playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        });
+
+        document.getElementById('prev').addEventListener('click', () => {
+            currentIdx = (currentIdx - 1 + playlist.length) % playlist.length;
+            loadTrack(currentIdx); audio.play();
+            playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        });
+
+        audio.addEventListener('ended', () => document.getElementById('next').click());
+
+        audio.addEventListener('timeupdate', () => {
+            progressBar.value = (audio.currentTime / audio.duration) * 100 || 0;
+            document.getElementById('current-time').innerText = fTime(audio.currentTime);
+            document.getElementById('duration').innerText = fTime(audio.duration || 0);
+        });
+
+        progressBar.addEventListener('input', () => audio.currentTime = (progressBar.value / 100) * audio.duration);
+        volSlider.addEventListener('input', () => audio.volume = volSlider.value / 100);
+        function fTime(s) { const m = Math.floor(s/60), sc = Math.floor(s%60); return `${m}:${sc<10?'0':''}${sc}`; }
+
+        function draw() {
+            requestAnimationFrame(draw);
+            const cx = canvas.width/2, cy = canvas.height/2;
+            ctx.clearRect(0,0,400,400);
+            if(analyser && !audio.paused) { analyser.getByteFrequencyData(dataArray); rotation += 0.015; }
+            ctx.save(); ctx.translate(cx, cy); ctx.rotate(rotation);
+            ctx.beginPath(); ctx.arc(0,0,150,0,6.28); ctx.fillStyle = '#080808'; ctx.fill();
+            if(dataArray) for(let i=0; i<dataArray.length; i++) {
+                const h = dataArray[i]/4; ctx.rotate(6.28/dataArray.length);
+                ctx.fillStyle = `rgba(212,175,55,${h/60})`; ctx.fillRect(152,0,h,2);
+            }
+            const g = ctx.createLinearGradient(-150,-150,150,150);
+            g.addColorStop(0,'rgba(255,255,255,0.12)'); g.addColorStop(0.5,'transparent'); g.addColorStop(1,'rgba(255,255,255,0.05)');
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0,0,150,0,6.28); ctx.fill();
+            ctx.beginPath(); ctx.arc(0,0,45,0,6.28); ctx.fillStyle = '#D4AF37'; ctx.fill();
+            ctx.fillStyle = '#046307'; ctx.font = 'bold 10px Cinzel'; ctx.textAlign = 'center'; ctx.fillText('JIGRITA',0,5);
+            ctx.restore();
+        }
+        draw();
+
+        const bg = document.getElementById('bg-canvas'); const bctx = bg.getContext('2d');
+        let ps = []; window.addEventListener('resize', () => { bg.width = window.innerWidth; bg.height = window.innerHeight; });
+        window.dispatchEvent(new Event('resize'));
+        class P { constructor() { this.reset(); } reset() { this.x = Math.random()*bg.width; this.y = bg.height+10; this.s = Math.random()*2; this.sp = Math.random()*1+0.2; } 
+        up() { this.y -= this.sp; if(this.y<-10) this.reset(); } dr() { bctx.fillStyle='rgba(212,175,55,0.4)'; bctx.beginPath(); bctx.arc(this.x,this.y,this.s,0,6.28); bctx.fill(); } }
+        document.getElementById('mode-toggle').addEventListener('click', () => {
+            isRoyalMode = !isRoyalMode; document.getElementById('toggle-circle').setAttribute('cx', isRoyalMode?'22.5':'7.5');
+            if(isRoyalMode && !ps.length) for(let i=0; i<100; i++) ps.push(new P());
+        });
+        function anim() { requestAnimationFrame(anim); bctx.clearRect(0,0,bg.width,bg.height); if(isRoyalMode) ps.forEach(p=>{p.up(); p.dr();}); }
+        anim();
+    </script>
+</body>
+</html>
